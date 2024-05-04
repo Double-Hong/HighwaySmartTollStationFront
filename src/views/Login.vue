@@ -21,18 +21,30 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import request from '../request/request'
+import router from "../router";
+import {ElMessage} from "element-plus";
+import {store} from "../utils/store.ts";
 
+const myStore = store()
 const username = ref('')
 const password = ref('')
 
 
 const login = () => {
-  console.log(username.value)
-  console.log(password.value)
-  request.get("/user-info-entity/login").then(res=>{
-    console.log(res.data.id)
+  request.get("/user-info-entity/login/" + username.value + "," + password.value).then(res => {
 
-    console.log(res.data)
+    if (res.data.length != 0) {
+      ElMessage.success('登录成功')
+      console.log(res.data)
+      myStore.currentUserId = res.data.uid
+      myStore.setUserInfo(res.data)
+      router.push({
+        path: '/mainView'
+      })
+    } else {
+      ElMessage.error('用户名或密码错误')
+    }
+
   })
 
 

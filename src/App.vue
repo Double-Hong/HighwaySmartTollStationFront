@@ -1,4 +1,21 @@
 <script setup lang="ts">
+
+import {store} from "./utils/store.ts";
+
+if (sessionStorage.getItem("userInfoId")){
+  store().setCurrentUserId(JSON.parse(sessionStorage.getItem("userInfoId")))
+}
+if (sessionStorage.getItem("userInfo")){
+  store().setUserInfo(JSON.parse(sessionStorage.getItem("userInfo")))
+}
+
+
+
+window.addEventListener('beforeunload',()=>{
+  sessionStorage.setItem("userInfoId",JSON.stringify(store().getCurrentUserId()))
+  sessionStorage.setItem("userInfo",JSON.stringify(store().getUserInfo()))
+})
+
 </script>
 
 <template>
