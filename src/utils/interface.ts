@@ -59,7 +59,39 @@ export interface InductionScreen {
     equipmentIp: string;
 }
 
+//车道智能自助设备
+export interface LaneSmartDevice {
+    laneSmartDeviceId: string;
+    entranceEquipmentId: string;
+    exportEquipmentId: string;
+    laneSmartDeviceName: string;
+    installationDate: string;
+    state: string;
+    equipmentIp: string;
+}
 
+//出口自助缴费设备
+export interface ExportPaymentEquipment {
+    exportEquipmentId: string;
+    laneSmartDeviceId: string;
+    exportName: string;
+    installationDate: string;
+    state: string;
+    receiptNumber: number;
+    scannerState: string;
+    equipmentIp: string;
+}
+
+//
+export interface EntranceEquipment {
+    entranceEquipmentId: string;
+    laneSmartDeviceId: string;
+    entranceName: string;
+    installationDate: string;
+    state: string;
+    cardNumber: number;
+    equipmentIp: string;
+}
 
 export enum userType{
     "普通" = 1 ,

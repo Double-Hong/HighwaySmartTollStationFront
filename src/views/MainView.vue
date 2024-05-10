@@ -197,7 +197,6 @@ const editDialogVisible = ref(false)
 //打开编辑对话框
 const openEditDialog = () => {
   editDialogVisible.value = true
-  console.log(JSON.stringify(pageData.userInfo))
   //这里是为了去除引用传递，先化为json字符串，再转换回来，就形成了值传递
   pageData.editInfo = JSON.parse(JSON.stringify(pageData.userInfo))
 }
