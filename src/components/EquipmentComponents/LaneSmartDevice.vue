@@ -7,7 +7,7 @@
   </div>
   <div v-if="!detailVisible">
     <h1 style="text-align: center">车道智能自助设备</h1>
-    <div style="width: 100%;display: flex">
+    <div style="width: 100%;display: flex;flex-flow: row wrap;">
       <div v-for="item in pageInfo.laneSmartDevices"
            style="position: relative;width: 33.3%;height: 100%;text-align: center">
         <el-card>
@@ -222,14 +222,12 @@ const currentType = ref(1)
 //查看入口详情
 const goToEntranceDetail = () => {
   childDialogVisible.value = true
-  console.log("查看入口详情")
   currentType.value = 1
 }
 
 //查看出口详情
 const goToExportDetail = () => {
   childDialogVisible.value = true
-  console.log("查看出口详情")
   currentType.value = 2
 }
 

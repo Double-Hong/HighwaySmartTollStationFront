@@ -10,10 +10,7 @@
   <div style="position: absolute;top:11%;left: 12%;width: 88%;height: 89%">
     <PreTransactionEquipment v-if="myStore.contentVisible==1"/>
     <LaneSmartDevice v-if="myStore.contentVisible==2"/>
-<!--    <AdminRegular v-if="myStore.contentVisible==2"/>-->
-<!--    <AdminMerchant v-if="myStore.contentVisible==3"/>-->
-<!--    <AdminShop v-if="myStore.contentVisible==4"/>-->
-<!--    <AdminAudit v-if="myStore.contentVisible==5"/>-->
+    <LaneInfrastructure v-if="myStore.contentVisible==3"/>
   </div>
 </div>
 
@@ -26,6 +23,7 @@ import EquipmentAside from "../components/EquipmentComponents/EquipmentAside.vue
 import PreTransactionEquipment from "../components/EquipmentComponents/PreTransactionEquipment.vue";
 import router from "../router";
 import LaneSmartDevice from "../components/EquipmentComponents/LaneSmartDevice.vue";
+import LaneInfrastructure from "../components/EquipmentComponents/LaneInfrastructure.vue";
 
 const myStore = store()
 

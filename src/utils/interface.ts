@@ -82,7 +82,7 @@ export interface ExportPaymentEquipment {
     equipmentIp: string;
 }
 
-//
+//入口自助收费设备
 export interface EntranceEquipment {
     entranceEquipmentId: string;
     laneSmartDeviceId: string;
@@ -90,6 +90,66 @@ export interface EntranceEquipment {
     installationDate: string;
     state: string;
     cardNumber: number;
+    equipmentIp: string;
+}
+
+//雨棚灯
+export interface AwningLight {
+    awningLightId: string;
+    laneInfrastructureId: string;
+    awningLightName: string;
+    installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
+    state: string;
+    fixtureType: string;
+    brightness: number;
+    equipmentIp: string;
+}
+
+//车检器
+export interface CarDetector {
+    carDetectorId: string;
+    laneInfrastructureId: string;
+    carDetectorName: string;
+    installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
+    state: string;
+    detectionMethod: string;
+    detectionRange: number;
+    equipmentIp: string;
+}
+//LED情报板
+export interface IntelBoard {
+    ledBoardId: string;
+    laneInfrastructureId: string;
+    ledBoardName: string;
+    state: string;
+    installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
+    displayRate: number;
+    brightness: number;
+    contrastRatio: number;
+    equipmentIp: string;
+}
+//车道称重设备
+export interface LaneWeighingEquipment {
+    laneWeighingId: string;
+    laneInfrastructureId: string;
+    laneWeighingName: string;
+    installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
+    state: string;
+    weighingMachineState: number;
+    displayState: string;
+    equipmentIp: string;
+}
+
+//车道基础设备
+export interface LaneInfrastructure {
+    laneInfrastructureId: string;
+    carDetectorId: string;
+    laneWeighingId: string;
+    ledBoardId: string;
+    awningLightId: string;
+    laneInfrastructureName: string;
+    installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
+    state: string;
     equipmentIp: string;
 }
 

@@ -261,7 +261,6 @@ import request from "../../request/request.ts";
 import {Antenna, Camera, InductionScreen, preTransactionGantryEquipment} from "../../utils/interface.ts";
 import {CheckOne, CloseOne} from "@icon-park/vue-next"
 import {ElMessage} from "element-plus";
-import {c} from "vite/dist/node/types.d-aGj9QkWt";
 
 //详情界面可见性
 const detailVisible = ref(false)
