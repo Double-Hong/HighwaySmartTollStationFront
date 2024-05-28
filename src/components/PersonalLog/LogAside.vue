@@ -21,22 +21,23 @@ const handleClose = (key: string, keyPath: string[]) => {
       style="width: 100%;height: 100%"
   >
 
-    <el-menu-item index="1" @click="myStore.contentDeviceVisible=1">
+    <el-menu-item index="1" @click="myStore.contentLogVisible=1">
       <devices theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
-      <span>&nbsp预交易门架设备</span>
+      <span>&nbsp个人日志</span>
     </el-menu-item>
-    <el-menu-item index="2" @click="myStore.contentDeviceVisible=2">
+    <el-menu-item index="2" v-if="myStore.getUserInfo().type==2" @click="myStore.contentLogVisible=2">
       <projector-two theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
-      <span>&nbsp车道智能自助设备</span>
+      <span>&nbsp故障日志</span>
     </el-menu-item>
-    <el-menu-item index="3" @click="myStore.contentDeviceVisible=3">
-      <micro-slr-camera theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
-      <span>&nbsp车道基础设备</span>
+    <el-menu-item index="3" v-if="myStore.getUserInfo().type==3" @click="myStore.contentLogVisible=3">
+      <projector-two theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
+      <span>&nbsp维修日志</span>
     </el-menu-item>
 
-<!--    <el-menu-item index="4" @click="myStore.contentVisible=4">-->
-<!--      <span>&nbspTest</span>-->
-<!--    </el-menu-item>-->
+
+    <!--    <el-menu-item index="4" @click="myStore.contentVisible=4">-->
+    <!--      <span>&nbspTest</span>-->
+    <!--    </el-menu-item>-->
 
   </el-menu>
 </template>

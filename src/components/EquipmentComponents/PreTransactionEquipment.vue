@@ -6,20 +6,28 @@
     <close-one theme="filled" size="24" fill="#eb0909"/>
     <span>设备异常</span>
   </div>
+  <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%">
+    <el-button type="success" @click="openAddParentDialog">新增设备</el-button>
+  </div>
   <!--  总览界面-->
   <div v-if="!detailVisible">
     <h1 style="text-align: center">预交易门架设备</h1>
-    <div style="display: flex;width: 100%">
+    <div style="display: flex;flex-flow: row wrap;width: 100%">
       <div v-for="item in pageInfo.transactionEquipment"
            style="position: relative;width: 33.3%;height: 100%;text-align: center">
         <el-card>
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%" theme="filled" size="24"
                      fill="#09eb49"/>
           <close-one v-else style="position: absolute;left: 5%;top: 5%" theme="filled" size="24" fill="#eb0909"/>
+          <el-button @click="openEditParent(item)" style="position: absolute;top: 3%;right: 1%" v-if="myStore.getUserInfo().type==1">
+            <editor theme="filled" size="24" fill="#000000"/>
+          </el-button>
+
           <h2>{{ item.transactionName }}</h2>
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button type="primary" @click="goToDetail(item)">详细信息</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger">删除</el-button>
         </el-card>
 
       </div>
@@ -47,6 +55,7 @@
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToAntennaDetail(item)">详情</el-button>
+          <el-button type="info">设备日志</el-button>
         </el-card>
       </div>
       <!--    摄像头-->
@@ -59,6 +68,7 @@
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToCameraDetail(item)">详情</el-button>
+          <el-button @click="deviceLogVisible=true" type="info">设备日志</el-button>
         </el-card>
       </div>
       <!--    诱导屏-->
@@ -72,6 +82,7 @@
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToInductionScreenDetail(item)">详情</el-button>
+          <el-button type="info">设备日志</el-button>
         </el-card>
       </div>
     </div>
@@ -170,6 +181,7 @@
     </el-descriptions>
     <br>
     <el-button type="primary" @click="openEditChild">修改</el-button>
+    <el-button type="info">上报故障</el-button>
   </el-dialog>
   <!--  修改对话框-->
   <el-dialog
@@ -253,20 +265,103 @@
     <el-button type="danger" @click="editChildVisible=false">取消</el-button>
   </el-dialog>
 
+<!--  设备日志对话框-->
+
+  <el-dialog
+      title="设备日志"
+      v-model="deviceLogVisible"
+      width="50%"
+      style="text-align: center"
+  >
+    <h2>故障日志</h2>
+    <el-table :data="testData">
+      <el-table-column prop="time" label="上报时间" />
+      <el-table-column prop="people" label="上报人" />
+      <el-table-column prop="description" label="描述" />
+      <el-table-column prop="state" label="状态" />
+    </el-table>
+    <h2>维修日志</h2>
+    <el-table :data="testData2">
+      <el-table-column prop="time" label="维修时间" />
+      <el-table-column prop="people" label="维修人人" />
+      <el-table-column prop="description" label="描述" />
+      <el-table-column prop="result" label="维修结果" />
+      <el-table-column prop="state" label="状态" />
+    </el-table>
+  </el-dialog>
+
+  <!--  新增设备对话框-->
+  <el-dialog
+      title="添加设备"
+      v-model="addEquipmentVisible"
+      width="40%"
+      style="text-align: center"
+  >
+    <el-form label-width="100px">
+      <el-form-item label="设备名称">
+        <el-input v-model="pageInfo.addTransactionEquipment.transactionName" />
+      </el-form-item>
+      <el-form-item label="安装日期">
+        <el-date-picker v-model="pageInfo.addTransactionEquipment.installationDate" />
+      </el-form-item>
+      <el-form-item label="设备IP">
+        <el-input v-model="pageInfo.addTransactionEquipment.equipmentIp" />
+      </el-form-item>
+    </el-form>
+    <el-button @click="makeSureAdd">添加</el-button>
+  </el-dialog>
+
+
+<!--  修改父设备对话框-->
+  <el-dialog
+      v-model="editParentVisible"
+      width="30%"
+      :title="pageInfo.currentEquipment.transactionName"
+      style="text-align: center"
+  >
+    <el-form label-width="75px">
+      <el-form-item label="名称">
+        <el-input v-model="pageInfo.editTransactionEquipment.transactionName" />
+      </el-form-item>
+      <el-form-item label="安装日期">
+        <el-input v-model="pageInfo.editTransactionEquipment.installationDate" disabled/>
+      </el-form-item>
+      <el-form-item label="IP地址">
+        <el-input v-model="pageInfo.editTransactionEquipment.equipmentIp" />
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-input v-model="pageInfo.editTransactionEquipment.state" disabled/>
+      </el-form-item>
+    </el-form>
+    <el-button @click="makeSureEditParent" type="primary">确定</el-button>
+    <el-button @click="editParentVisible=false" type="danger">取消</el-button>
+  </el-dialog>
+
+
 </template>
 
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
 import request from "../../request/request.ts";
-import {Antenna, Camera, InductionScreen, preTransactionGantryEquipment} from "../../utils/interface.ts";
-import {CheckOne, CloseOne} from "@icon-park/vue-next"
+import {
+  Antenna,
+  Camera,
+  InductionScreen,
+  LaneSmartDevice,
+  preTransactionGantryEquipment
+} from "../../utils/interface.ts";
+import {CheckOne, CloseOne,Editor} from "@icon-park/vue-next"
 import {ElMessage} from "element-plus";
+import {store} from "../../utils/store.ts";
 
+
+const myStore = store()
 //详情界面可见性
 const detailVisible = ref(false)
 
 const pageInfo = reactive({
   transactionEquipment: {} as preTransactionGantryEquipment[],
+  editTransactionEquipment: {} as preTransactionGantryEquipment,
   currentEquipment: {} as preTransactionGantryEquipment,
   cameraList: {} as Camera[],
   antennas: {} as Antenna[],
@@ -277,6 +372,8 @@ const pageInfo = reactive({
   editAntenna: {} as Antenna,
   editCamera: {} as Camera,
   editInductionScreen: {} as InductionScreen,
+  // 添加
+  addTransactionEquipment: {} as preTransactionGantryEquipment,
 })
 
 //预交易门架设备中子设备的类型的数量
@@ -377,6 +474,68 @@ const makeSureEdit = () => {
     })
   }
 }
+
+//修改父设备对话框可见性
+const editParentVisible = ref(false)
+
+//打开修改父设备对话框
+const openEditParent = (item : preTransactionGantryEquipment) => {
+  pageInfo.editTransactionEquipment = JSON.parse(JSON.stringify(item))
+  pageInfo.currentEquipment = JSON.parse(JSON.stringify(item))
+  editParentVisible.value = true
+}
+
+//确认修改父设备
+const makeSureEditParent = () => {
+  request.post("/pre-transaction-gantry-equipment-entity/updateTransactionDetail", pageInfo.editTransactionEquipment).then(res => {
+    pageInfo.transactionEquipment = res.data
+    ElMessage.success("修改成功")
+  })
+
+  editParentVisible.value = false
+}
+
+//添加父设备
+const addEquipmentVisible = ref(false)
+
+const openAddParentDialog = ()=>{
+  pageInfo.addTransactionEquipment = reactive({} as preTransactionGantryEquipment)
+  addEquipmentVisible.value = true
+}
+
+
+//新增设备
+const makeSureAdd = () =>{
+  request.post("/pre-transaction-gantry-equipment-entity/addTransactionDetail",pageInfo.addTransactionEquipment).then(res =>{
+    pageInfo.transactionEquipment = res.data
+    ElMessage.success("添加成功")
+    addEquipmentVisible.value = false
+  })
+}
+
+//查看设备日志
+const deviceLogVisible = ref(false)
+
+const testData = [
+  {
+    time:"2024-5-10",
+    people:"wyx",
+    description:"镜头花了",
+    state:"已维修",
+  }
+]
+
+const testData2=[
+  {
+    time:"2024-5-11",
+    people:"yh",
+    description:"换了个镜头",
+    result:"修好了",
+    state:"已维修",
+  }
+]
+
+
 
 onMounted(() => {
   request.get("/pre-transaction-gantry-equipment-entity/getAllTransactionEquipment").then(res => {

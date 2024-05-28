@@ -1,36 +1,36 @@
 //用户信息
-export interface userInfo{
-    uid:string,
-    username:string,
-    name:string
-    password:string,
-    gender:string,
-    birthday:string,
-    type:string,
-    phone:string,
-    address:string
+export interface userInfo {
+    uid: string,
+    username: string,
+    name: string
+    password: string,
+    gender: string,
+    birthday: string,
+    type: string,
+    phone: string,
+    address: string
 }
 
 //预交易门架设备
-export interface preTransactionGantryEquipment{
-    transactionId:string,
-    transactionName:string,
-    installationDate:string,
-    state:string,
-    equipmentIp:string,
+export interface preTransactionGantryEquipment {
+    transactionId: string,
+    transactionName: string,
+    installationDate: string,
+    state: string,
+    equipmentIp: string,
 }
 
 //摄像头
-export interface Camera{
-    cameraId:string,
-    laneInfrastructureId:string,
-    transactionId:string,
-    cameraName:string,
-    installationDate:string,
-    focalLength:number,
-    aperture:string,
-    state:string,
-    equipmentIp:string,
+export interface Camera {
+    cameraId: string,
+    laneInfrastructureId: string,
+    transactionId: string,
+    cameraName: string,
+    installationDate: string,
+    focalLength: number,
+    aperture: string,
+    state: string,
+    equipmentIp: string,
 }
 
 //ETC天线
@@ -116,6 +116,7 @@ export interface CarDetector {
     detectionRange: number;
     equipmentIp: string;
 }
+
 //LED情报板
 export interface IntelBoard {
     ledBoardId: string;
@@ -128,6 +129,7 @@ export interface IntelBoard {
     contrastRatio: number;
     equipmentIp: string;
 }
+
 //车道称重设备
 export interface LaneWeighingEquipment {
     laneWeighingId: string;
@@ -153,8 +155,52 @@ export interface LaneInfrastructure {
     equipmentIp: string;
 }
 
-export enum userType{
-    "普通" = 1 ,
-    "检查人员" =2 ,
-    "维修人员" =3
+//维修人员日志
+export interface AccendantLog {
+    accendantId: string;
+    uid: string;
+    logTime: string;
+    logDescription: string;
+    deviceName: string;
+    deviceId: string;
+    deviceType: string;
+}
+
+//监测人员日志
+export interface InspectorLog {
+    inspectorLogId: string;
+    uid: string;
+    logTime: string;
+    logDescription: string;
+    deviceName: string;
+    deviceId: string;
+    deviceType: string;
+}
+
+//故障日志
+export interface FaultLog {
+    logId: string;
+    deviceId: string;
+    faultTime: string;
+    description: string;
+    writerId: string;
+    maintenanceState: string;
+    deviceName: string;
+}
+
+//维修日志
+export interface MaintenanceLog {
+    maintenanceId:string,
+    logId:string,
+    maintainTime:string,
+    maintainDescription:string,
+    maintainResult:string,
+    maintainPeople:string,
+    deviceName:string,
+}
+
+export enum userType {
+    "管理员" = 1,
+    "监测人员" = 2,
+    "维修人员" = 3
 }

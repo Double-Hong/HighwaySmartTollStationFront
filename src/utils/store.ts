@@ -4,7 +4,8 @@ import {userInfo} from "./interface.ts";
 
 export const store = defineStore("all", () => {
     const currentUserId = ref("")
-    const contentVisible = ref(0)
+    const contentDeviceVisible = ref(0)//设备管理界面的可见性
+    const contentLogVisible = ref(0)//日志管理界面的可见性
 
     const userInfo = ref<userInfo>(
         {address: "", birthday: "", gender: "", phone: "", type: "", name: "", password: "", uid: "", username: ""})
@@ -30,6 +31,7 @@ export const store = defineStore("all", () => {
     }
 
     return {
-        currentUserId, getCurrentUserId, setCurrentUserId, setUserInfo, getUserInfo,setPassword,contentVisible
+        currentUserId, getCurrentUserId, setCurrentUserId, setUserInfo,
+        getUserInfo,setPassword,contentLogVisible,contentDeviceVisible
     }
 })
