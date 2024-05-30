@@ -25,7 +25,7 @@
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button type="primary" @click="goToDetail(item)">详细信息</el-button>
-          <el-button v-if="myStore.getUserInfo().type==1" type="danger">删除</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteDialog(item)">删除</el-button>
         </el-card>
 
       </div>
@@ -227,6 +227,21 @@
     <el-button @click="editParentVisible=false" type="danger">取消</el-button>
   </el-dialog>
 
+  <!--  确定删除对话框-->
+  <el-dialog
+      title="删除设备"
+      v-model="deleteParentVisible"
+      style="text-align: center"
+      width="30%"
+  >
+
+    <h2 style="color: #d21632">确认删除？</h2>
+    <h1>{{ pageInfo.currentDevices.laneSmartDeviceName }}</h1>
+    <br>
+    <el-button type="primary" @click="makeSureDeleteParent">确定</el-button>
+    <el-button @click="deleteParentVisible=false">取消</el-button>
+  </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -356,6 +371,24 @@ const makeSureAdd = () => {
     addEquipmentVisible.value = false
   })
 }
+
+//删除父设备
+
+const deleteParentVisible = ref(false)
+
+const openDeleteDialog = (item: LaneSmartDevice) => {
+  pageInfo.currentDevices = JSON.parse(JSON.stringify(item))
+  deleteParentVisible.value = true
+}
+
+const makeSureDeleteParent = () => {
+  request.get("/lane-smart-device-entity/deleteLaneSmartDevice/"+pageInfo.currentDevices.laneSmartDeviceId).then(res =>{
+    pageInfo.laneSmartDevices = res.data
+    ElMessage.success("删除成功")
+    deleteParentVisible.value = false
+  })
+}
+
 
 onMounted(() => {
   request.get("/lane-smart-device-entity/getAllLaneSmartDevice").then(res => {

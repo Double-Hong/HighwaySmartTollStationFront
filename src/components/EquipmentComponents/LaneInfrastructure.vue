@@ -6,7 +6,7 @@
     <span>设备异常</span>
   </div>
   <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%">
-    <el-button type="success">新增设备</el-button>
+    <el-button type="success" @click="openAddParentDialog">新增设备</el-button>
   </div>
   <div v-if="!detailVisible">
     <h1 style="text-align: center">车道基础设备</h1>
@@ -17,14 +17,15 @@
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%" theme="filled" size="24"
                      fill="#09eb49"/>
           <close-one v-else style="position: absolute;left: 5%;top: 5%" theme="filled" size="24" fill="#eb0909"/>
-          <el-button @click="openEditParent(item)" style="position: absolute;top: 3%;right: 1%" v-if="myStore.getUserInfo().type==1">
+          <el-button @click="openEditParent(item)" style="position: absolute;top: 3%;right: 1%"
+                     v-if="myStore.getUserInfo().type==1">
             <editor theme="filled" size="24" fill="#000000"/>
           </el-button>
           <h2>{{ item.laneInfrastructureName }}</h2>
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button type="primary" @click="goToDetail(item)">详细信息</el-button>
-          <el-button v-if="myStore.getUserInfo().type==1" type="danger">删除</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteDialog(item)">删除</el-button>
         </el-card>
       </div>
     </div>
@@ -150,13 +151,13 @@
   >
     <el-form label-width="75px">
       <el-form-item label="名称">
-        <el-input v-model="pageInfo.editLaneInfrastructures.laneInfrastructureName" />
+        <el-input v-model="pageInfo.editLaneInfrastructures.laneInfrastructureName"/>
       </el-form-item>
       <el-form-item label="安装日期">
         <el-input v-model="pageInfo.editLaneInfrastructures.installationDate" disabled/>
       </el-form-item>
       <el-form-item label="IP地址">
-        <el-input v-model="pageInfo.editLaneInfrastructures.equipmentIp" />
+        <el-input v-model="pageInfo.editLaneInfrastructures.equipmentIp"/>
       </el-form-item>
       <el-form-item label="状态">
         <el-input v-model="pageInfo.editLaneInfrastructures.state" disabled/>
@@ -164,6 +165,41 @@
     </el-form>
     <el-button @click="makeSureEditParent" type="primary">确定</el-button>
     <el-button @click="editParentVisible=false" type="danger">取消</el-button>
+  </el-dialog>
+
+  <!--  新增设备对话框-->
+  <el-dialog
+      title="添加设备"
+      v-model="addEquipmentVisible"
+      width="40%"
+      style="text-align: center"
+  >
+    <el-form label-width="100px">
+      <el-form-item label="设备名称">
+        <el-input v-model="pageInfo.addLaneInfrastructure.laneInfrastructureName"/>
+      </el-form-item>
+      <el-form-item label="安装日期">
+        <el-date-picker v-model="pageInfo.addLaneInfrastructure.installationDate"/>
+      </el-form-item>
+      <el-form-item label="设备IP">
+        <el-input v-model="pageInfo.addLaneInfrastructure.equipmentIp"/>
+      </el-form-item>
+    </el-form>
+    <el-button @click="makeSureAdd">添加</el-button>
+  </el-dialog>
+
+  <!--  确定删除对话框-->
+  <el-dialog
+      title="删除设备"
+      v-model="deleteParentVisible"
+      style="text-align: center"
+      width="30%"
+  >
+    <h2 style="color: #d21632">确认删除？</h2>
+    <h1>{{pageInfo.currentLaneInfrastructures.laneInfrastructureName}}</h1>
+    <br>
+    <el-button type="primary" @click="makeSureDeleteParent">确定</el-button>
+    <el-button @click="deleteParentVisible=false">取消</el-button>
   </el-dialog>
 
 </template>
@@ -195,6 +231,7 @@ const myStore = store()
 const detailVisible = ref(false)
 const pageInfo = reactive({
   laneInfrastructures: {} as LaneInfrastructure[],
+  addLaneInfrastructure: {} as LaneInfrastructure,
   editLaneInfrastructures: {} as LaneInfrastructure,
   currentLaneInfrastructures: {} as LaneInfrastructure,
   currentAwningLight: {} as AwningLight,
@@ -335,7 +372,7 @@ const makeSureEdit = () => {
 const editParentVisible = ref(false)
 
 //打开修改父设备对话框
-const openEditParent = (item : LaneInfrastructure) => {
+const openEditParent = (item: LaneInfrastructure) => {
   pageInfo.editLaneInfrastructures = JSON.parse(JSON.stringify(item))
   pageInfo.currentLaneInfrastructures = JSON.parse(JSON.stringify(item))
   editParentVisible.value = true
@@ -348,6 +385,38 @@ const makeSureEditParent = () => {
     ElMessage.success("修改成功")
   })
   editParentVisible.value = false
+}
+
+//添加父设备
+const addEquipmentVisible = ref(false)
+//打开添加父设备对话框
+const openAddParentDialog = () => {
+  pageInfo.addLaneInfrastructure = reactive({} as LaneInfrastructure)
+  addEquipmentVisible.value = true
+}
+
+const makeSureAdd = () => {
+  request.post("/lane-infrastructure-entity/addLaneInfrastructure", pageInfo.addLaneInfrastructure).then(res => {
+    pageInfo.laneInfrastructures = res.data
+    ElMessage.success("添加成功")
+    addEquipmentVisible.value = false
+  })
+}
+
+//删除父设备
+
+const deleteParentVisible = ref(false)
+const openDeleteDialog = (item: LaneInfrastructure) => {
+  pageInfo.currentLaneInfrastructures = JSON.parse(JSON.stringify(item))
+  deleteParentVisible.value = true
+}
+
+const makeSureDeleteParent = () => {
+  request.get("/lane-infrastructure-entity/deleteLaneInfrastructure/"+pageInfo.currentLaneInfrastructures.laneInfrastructureId).then(res =>{
+    pageInfo.laneInfrastructures = res.data
+    ElMessage.success("删除成功")
+    deleteParentVisible.value = false
+  })
 }
 
 onMounted(() => {
