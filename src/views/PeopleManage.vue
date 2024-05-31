@@ -3,8 +3,20 @@
   <br>
   <el-button style="position: absolute;left: 4%;top: 5%" @click="back">返回</el-button>
   <br>
+  <el-input v-model="search" placeholder="请输入关键字" style="width: 15%;position: absolute;left: 0.5%;top: 11%"
+            clearable/>
+  <el-select v-model="stateSelect" style="position: absolute;top: 11%;right: 12%;width: 10%" placeholder="筛选在职状态">
+    <el-option style="color: #ff5300" label="全部" value=""/>
+    <el-option style="color: #ff5300" label="在职" value="在职"/>
+    <el-option style="color: #ff5300" label="离职" value="离职"/>
+  </el-select>
+  <el-select v-model="tyeSelect" style="position: absolute;top: 11%;right: 2%;width: 10%" placeholder="筛选员工类型">
+    <el-option style="color: #ff5300" label="全部" value=""/>
+    <el-option style="color: #ff5300" label="监测人员" value="2"/>
+    <el-option style="color: #ff5300" label="维修人员" value="3"/>
+  </el-select>
   <div>
-    <el-table :data="pageInfo.userList" stripe>
+    <el-table :data="peopleListFilter" stripe>
       <el-table-column prop="name" label="姓名"/>
       <el-table-column prop="username" label="用户名"/>
       <el-table-column prop="phone" label="电话"/>
@@ -18,6 +30,16 @@
       </el-table-column>
       <el-table-column prop="birthday" label="生日"/>
       <el-table-column prop="gender" label="性别"/>
+      <el-table-column prop="state" label="状态" >
+        <template v-slot:default="scope">
+          <el-tag v-if="scope.row.state == '在职'" type="success" size="large">
+            {{scope.row.state}}
+          </el-tag>
+          <el-tag v-else type="danger" size="large">
+            {{scope.row.state}}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="300">
         <template v-slot:header>
           <label>操作</label>
@@ -26,7 +48,8 @@
         <template v-slot:default="scope">
           <el-button type="info" @click="openPeopleLog(scope.row)">日志</el-button>
           <el-button type="primary" @click="openEditPeople(scope.row)">修改</el-button>
-          <el-button type="danger">删除</el-button>
+          <el-button v-if="scope.row.state == '在职'" type="danger" @click="changePeopleState(scope.row)">标记为离职</el-button>
+          <el-button v-else type="success" @click="changePeopleState(scope.row)">标记为在职</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -124,7 +147,7 @@
 <script setup lang="ts">
 
 import router from "../router";
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {AccendantLog, InspectorLog, userInfo, userType} from "../utils/interface.ts";
 import request from "../request/request.ts";
 import {ElMessage} from "element-plus";
@@ -223,6 +246,40 @@ const openPeopleLog = (item: userInfo) => {
     })
   }
 }
+
+//标记员工离职和在职
+const changePeopleState = (item:userInfo) =>{
+  if (item.state == "在职"){
+    item.state = "离职"
+  }else {
+    item.state = "在职"
+  }
+  request.post("/user-info-entity/modifyUserInfo",item).then(res =>{
+    if (res.data == 1) {
+      ElMessage.success('操作成功')
+      request.get("/user-info-entity/getAllUserInfo").then(res2 => {
+        pageInfo.userList = res2.data
+        console.log(pageInfo.userList)
+      })
+    } else {
+      ElMessage.error('操作失败')
+    }
+  })
+}
+
+//查找与筛选
+const search = ref('')
+const stateSelect = ref('')
+const tyeSelect = ref('')
+
+const peopleListFilter =computed(()=>{
+  return pageInfo.userList.filter((item)=>{
+    return ((item.name.includes(search.value)) || (item.username.includes(search.value)) || (item.phone.includes(search.value)))
+    && ((item.state.includes(stateSelect.value)))
+    && (item.type.includes(tyeSelect.value))
+  })
+})
+
 
 onMounted(() => {
   request.get("/user-info-entity/getAllUserInfo").then(res => {

@@ -1,4 +1,4 @@
-import {AwningLight, CarDetector, IntelBoard, LaneWeighingEquipment} from "../../utils/interface.ts";
+import {AwningLight, CarDetector, EntranceEquipment, IntelBoard, LaneWeighingEquipment} from "../../utils/interface.ts";
 import {reactive} from "vue";
 
 export type formDataType<T> = {
@@ -182,5 +182,12 @@ export const editLaneWeighingEquipmentData: formDataType<LaneWeighingEquipment> 
         {
             label: "IP地址", name: "equipmentIp", type: ""
         },
+    ]
+})
+
+export const addEntranceEquipmentData: formDataType<EntranceEquipment> = reactive({
+    data: {} as EntranceEquipment,
+    message: [
+        {label: "设备名称", name: "entranceName", type: ""}
     ]
 })

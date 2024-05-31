@@ -6,7 +6,8 @@
     <span>设备异常</span>
   </div>
   <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%">
-    <el-button type="success" @click="openAddParentDialog">新增设备</el-button>
+    <el-button v-if="!detailVisible" type="success" @click="openAddParentDialog">新增设备</el-button>
+    <el-button v-else type="success" @click="">新增子设备</el-button>
   </div>
   <div v-if="!detailVisible">
     <h1 style="text-align: center">车道基础设备</h1>

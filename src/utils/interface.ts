@@ -8,7 +8,8 @@ export interface userInfo {
     birthday: string,
     type: string,
     phone: string,
-    address: string
+    address: string,
+    state:string
 }
 
 //预交易门架设备

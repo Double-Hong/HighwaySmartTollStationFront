@@ -6,7 +6,8 @@
     <span>设备异常</span>
   </div>
   <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%">
-    <el-button type="success" @click="openAddParentDialog">新增设备</el-button>
+    <el-button v-if="!detailVisible" type="success" @click="openAddParentDialog">新增设备</el-button>
+    <el-button v-else type="success" @click="openAddChildDialog">新增子设备</el-button>
   </div>
   <div v-if="!detailVisible">
     <h1 style="text-align: center">车道智能自助设备</h1>
@@ -34,12 +35,12 @@
   </div>
   <!--  详情界面-->
   <div v-else>
-    <h1 style="text-align: center">{{ pageInfo.currentDevices.laneSmartDeviceName }}</h1>
+    <h1 style="text-align: center">{{ pageInfo.currentDevice.laneSmartDeviceName }}</h1>
     <el-button style="position: absolute;top: 1%;left: 1%" @click="detailVisible = false">返回</el-button>
 
     <h1 v-if="!flag1" style="text-align: center">该设备尚未关联入口设备，请尽快添加</h1>
     <h1 v-if="!flag2" style="text-align: center">该设备尚未关联出口设备，请尽快添加</h1>
-    <div v-if="flag1&&flag2" style="display: flex;flex-flow: row wrap;">
+    <div v-if="flag1" style="display: flex;flex-flow: row wrap;">
       <div style="width: 33%;height: 100%;position: relative;text-align: center">
         <el-card>
           <check-one v-if="pageInfo.entranceEquipment.state=='连接'" style="position: absolute;left: 5%;top: 5%"
@@ -53,7 +54,7 @@
           <el-button type="info">设备日志</el-button>
         </el-card>
       </div>
-      <div style="width: 33%;height: 100%;position: relative;text-align: center">
+      <div v-if="flag2" style="width: 33%;height: 100%;position: relative;text-align: center">
         <el-card>
           <check-one v-if="pageInfo.exportPaymentEquipment.state=='连接'" style="position: absolute;left: 5%;top: 5%"
                      theme="filled"
@@ -93,7 +94,7 @@
         <el-descriptions-item label="设备状态">{{ pageInfo.entranceEquipment.state }}</el-descriptions-item>
         <el-descriptions-item label="安装日期">{{ pageInfo.entranceEquipment.installationDate }}</el-descriptions-item>
         <el-descriptions-item label="卡片数量">{{ pageInfo.entranceEquipment.cardNumber }}</el-descriptions-item>
-        <el-descriptions-item label="所属设备">{{ pageInfo.currentDevices.laneSmartDeviceName }}</el-descriptions-item>
+        <el-descriptions-item label="所属设备">{{ pageInfo.currentDevice.laneSmartDeviceName }}</el-descriptions-item>
       </el-descriptions>
     </div>
     <div v-else>
@@ -117,7 +118,7 @@
             pageInfo.exportPaymentEquipment.scannerState
           }}
         </el-descriptions-item>
-        <el-descriptions-item label="所属设备">{{ pageInfo.currentDevices.laneSmartDeviceName }}</el-descriptions-item>
+        <el-descriptions-item label="所属设备">{{ pageInfo.currentDevice.laneSmartDeviceName }}</el-descriptions-item>
       </el-descriptions>
     </div>
     <br>
@@ -149,7 +150,7 @@
         <el-input-number min="0" max="500" v-model="pageInfo.editEntranceEquipment.cardNumber"/>
       </el-form-item>
       <el-form-item label="所属设备">
-        <el-input disabled v-model="pageInfo.currentDevices.laneSmartDeviceName"/>
+        <el-input disabled v-model="pageInfo.currentDevice.laneSmartDeviceName"/>
       </el-form-item>
     </el-form>
 
@@ -173,7 +174,7 @@
         <el-input v-model="pageInfo.editExportPaymentEquipment.scannerState"/>
       </el-form-item>
       <el-form-item label="所属设备">
-        <el-input disabled v-model="pageInfo.currentDevices.laneSmartDeviceName"/>
+        <el-input disabled v-model="pageInfo.currentDevice.laneSmartDeviceName"/>
       </el-form-item>
     </el-form>
 
@@ -206,7 +207,7 @@
   <el-dialog
       v-model="editParentVisible"
       width="30%"
-      :title="pageInfo.currentDevices.laneSmartDeviceName"
+      :title="pageInfo.currentDevice.laneSmartDeviceName"
       style="text-align: center"
   >
     <el-form label-width="75px">
@@ -236,11 +237,61 @@
   >
 
     <h2 style="color: #d21632">确认删除？</h2>
-    <h1>{{ pageInfo.currentDevices.laneSmartDeviceName }}</h1>
+    <h1>{{ pageInfo.currentDevice.laneSmartDeviceName }}</h1>
     <br>
     <el-button type="primary" @click="makeSureDeleteParent">确定</el-button>
     <el-button @click="deleteParentVisible=false">取消</el-button>
   </el-dialog>
+
+  <!--  新增子设备-->
+  <el-dialog
+      title="新增子设备"
+      v-model="addChildVisible"
+      width="50%"
+      style="text-align: center"
+  >
+    <el-select v-model="addChildSelect" style="width: 50%" placeholder="选择添加设备类型">
+      <el-option label="入口设备" value="1"/>
+      <el-option label="出口设备" value="2"/>
+    </el-select>
+    <br><br>
+    <div v-if="addChildSelect==1">
+      <div v-if="pageInfo.entranceEquipment.entranceEquipmentId == null">
+        <el-form label-width="100px">
+          <el-form-item label="设备名称">
+            <el-input v-model="pageInfo.addEntranceEquipment.entranceName" />
+          </el-form-item>
+          <el-form-item label="安装日期">
+            <el-date-picker v-model="pageInfo.addEntranceEquipment.installationDate" />
+          </el-form-item>
+          <el-form-item label="卡片数量">
+            <el-input-number v-model="pageInfo.addEntranceEquipment.cardNumber" />
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="pageInfo.addEntranceEquipment.state">
+              <el-option label="连接" value="连接" />
+              <el-option label="未连接" value="未连接" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="设备IP">
+            <el-input v-model="pageInfo.addEntranceEquipment.equipmentIp" />
+          </el-form-item>
+          <el-form-item label="所属设备">
+            <el-input v-model="pageInfo.currentDevice.laneSmartDeviceName" disabled />
+          </el-form-item>
+          <el-button type="primary">确定</el-button>
+          <el-button type="danger" @click="addChildVisible=false">取消</el-button>
+        </el-form>
+      </div>
+      <h3 v-else>该车道智能自助设备已有入口设备，1个车道智能自助设备仅能拥有1个入口设备</h3>
+    </div>
+
+    <div v-else-if="addChildSelect == 2">
+      <h2>出口</h2>
+    </div>
+
+  </el-dialog>
+
 
 </template>
 
@@ -256,17 +307,22 @@ import {
 import request from "../../request/request.ts";
 import {ElMessage} from "element-plus";
 import {store} from "../../utils/store.ts";
+import MyForm from "../FormComponent/MyForm.vue";
+import {addEntranceEquipmentData} from "../FormComponent/type.ts";
 
 const detailVisible = ref(false)
 const pageInfo = reactive({
   laneSmartDevices: {} as LaneSmartDevice[],
   addLaneSmart: {} as LaneSmartDevice,
   editLaneSmartDevice: {} as LaneSmartDevice,
-  currentDevices: {} as LaneSmartDevice,
+  currentDevice: {} as LaneSmartDevice,
   exportPaymentEquipment: {} as ExportPaymentEquipment,
   entranceEquipment: {} as EntranceEquipment,
   editExportPaymentEquipment: {} as ExportPaymentEquipment,
   editEntranceEquipment: {} as EntranceEquipment,
+  addEntranceEquipment:{} as EntranceEquipment,
+  addExportPaymentEquipment:{} as ExportPaymentEquipment,
+
 })
 
 const myStore = store()
@@ -276,12 +332,12 @@ const flag2 = ref(false)
 
 const goToDetail = (laneSmartDevice: LaneSmartDevice) => {
   detailVisible.value = true
-  pageInfo.currentDevices = laneSmartDevice
+  pageInfo.currentDevice = laneSmartDevice
   pageInfo.entranceEquipment = reactive({} as EntranceEquipment)
   pageInfo.exportPaymentEquipment = reactive({} as ExportPaymentEquipment)
   flag1.value = false
   flag2.value = false
-  request.get("/lane-smart-device-entity/getSmartDeviceDetailById/" + pageInfo.currentDevices.laneSmartDeviceId).then(res => {
+  request.get("/lane-smart-device-entity/getSmartDeviceDetailById/" + pageInfo.currentDevice.laneSmartDeviceId).then(res => {
     if (res.data.data.entranceEquipmentEntity != null) {
       pageInfo.entranceEquipment = res.data.data.entranceEquipmentEntity
       flag1.value = true
@@ -342,7 +398,7 @@ const editParentVisible = ref(false)
 //打开修改父设备对话框
 const openEditParent = (item: LaneSmartDevice) => {
   pageInfo.editLaneSmartDevice = JSON.parse(JSON.stringify(item))
-  pageInfo.currentDevices = JSON.parse(JSON.stringify(item))
+  pageInfo.currentDevice = JSON.parse(JSON.stringify(item))
   editParentVisible.value = true
 }
 
@@ -377,16 +433,33 @@ const makeSureAdd = () => {
 const deleteParentVisible = ref(false)
 
 const openDeleteDialog = (item: LaneSmartDevice) => {
-  pageInfo.currentDevices = JSON.parse(JSON.stringify(item))
+  pageInfo.currentDevice = JSON.parse(JSON.stringify(item))
   deleteParentVisible.value = true
 }
 
 const makeSureDeleteParent = () => {
-  request.get("/lane-smart-device-entity/deleteLaneSmartDevice/"+pageInfo.currentDevices.laneSmartDeviceId).then(res =>{
+  request.get("/lane-smart-device-entity/deleteLaneSmartDevice/" + pageInfo.currentDevice.laneSmartDeviceId).then(res => {
     pageInfo.laneSmartDevices = res.data
     ElMessage.success("删除成功")
     deleteParentVisible.value = false
   })
+}
+
+/**
+ * 新增子设备
+ */
+
+//新增子设备对话框可见性
+const addChildVisible = ref(false)
+//新增子设备，选择新增哪个子设备
+const addChildSelect = ref('')
+
+//打开新增子设备对话框
+const openAddChildDialog = () => {
+  addChildVisible.value = true
+  addChildSelect.value = ''
+  pageInfo.addEntranceEquipment = reactive({} as EntranceEquipment)
+  pageInfo.addExportPaymentEquipment = reactive({} as ExportPaymentEquipment)
 }
 
 
