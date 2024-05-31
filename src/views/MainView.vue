@@ -128,7 +128,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="用户名">
-        <el-input v-model="pageData.editInfo.username"></el-input>
+        <el-input v-model="pageData.editInfo.username" disabled></el-input>
       </el-form-item>
       <el-form-item label="电话">
         <el-input v-model="pageData.editInfo.phone"></el-input>
