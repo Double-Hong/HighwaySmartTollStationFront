@@ -5,14 +5,21 @@
     <close-one theme="filled" size="24" fill="#eb0909"/>
     <span>设备异常</span>
   </div>
-  <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%">
+  <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%;width: 10%">
     <el-button v-if="!detailVisible" type="success" @click="openAddParentDialog">新增设备</el-button>
-    <el-button v-else type="success" @click="openAddChildDialog">新增子设备</el-button>
+    <el-button v-else type="success" @click="openAddChildDialog" style="position: absolute;left: 20%">新增子设备</el-button>
   </div>
   <div v-if="!detailVisible">
     <h1 style="text-align: center">车道智能自助设备</h1>
+    <el-input v-model="searchParent" placeholder="请输入关键字" style="width: 10%;position: absolute;left: 10%;top: 7%"
+              clearable/>
+    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%" v-model="stateSelectParent">
+      <el-option style="color: #ff5300" label="全部" value=""/>
+      <el-option style="color: #ff5300" label="连接" value="连接"/>
+      <el-option style="color: #ff5300" label="未连接" value="未连接"/>
+    </el-select>
     <div style="width: 100%;display: flex;flex-flow: row wrap;">
-      <div v-for="item in pageInfo.laneSmartDevices"
+      <div v-for="item in laneSmartFilter"
            style="position: relative;width: 33.3%;height: 100%;text-align: center">
         <el-card>
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%" theme="filled" size="24"
@@ -353,7 +360,7 @@
 
 <script setup lang="ts">
 import {CheckOne, CloseOne, Editor} from "@icon-park/vue-next";
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {
   EntranceEquipment,
   ExportPaymentEquipment,
@@ -368,7 +375,7 @@ import {addEntranceEquipmentData} from "../FormComponent/type.ts";
 
 const detailVisible = ref(false)
 const pageInfo = reactive({
-  laneSmartDevices: {} as LaneSmartDevice[],
+  laneSmartDevices: [] as LaneSmartDevice[],
   addLaneSmart: {} as LaneSmartDevice,
   editLaneSmartDevice: {} as LaneSmartDevice,
   currentDevice: {} as LaneSmartDevice,
@@ -579,6 +586,21 @@ const refreshDetail = () => {
     }
   })
 }
+
+/**
+ * 查询与筛选
+ */
+
+//父设备查询与筛选
+const searchParent = ref('')
+const stateSelectParent = ref('')
+
+const laneSmartFilter = computed(() => {
+  return pageInfo.laneSmartDevices.filter((item) => {
+    return (item.laneSmartDeviceName.includes(searchParent.value) || item.equipmentIp.includes(searchParent.value))
+        && (item.state==stateSelectParent.value || stateSelectParent.value=='')
+  })
+})
 
 onMounted(() => {
   request.get("/lane-smart-device-entity/getAllLaneSmartDevice").then(res => {

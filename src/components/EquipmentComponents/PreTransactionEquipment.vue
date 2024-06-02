@@ -6,15 +6,23 @@
     <close-one theme="filled" size="24" fill="#eb0909"/>
     <span>设备异常</span>
   </div>
-  <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%">
+  <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%;width: 10%">
     <el-button v-if="!detailVisible" type="success" @click="openAddParentDialog">新增设备</el-button>
-    <el-button v-else type="success" @click="">新增子设备</el-button>
+    <el-button v-else type="success" @click="openAddChildDialog" style="position: absolute;left: 20%">新增子设备
+    </el-button>
   </div>
   <!--  总览界面-->
   <div v-if="!detailVisible">
     <h1 style="text-align: center">预交易门架设备</h1>
+    <el-input v-model="searchParent" placeholder="请输入关键字" style="width: 10%;position: absolute;left: 10%;top: 7%"
+              clearable/>
+    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%" v-model="stateSelectParent">
+      <el-option style="color: #ff5300" label="全部" value=""/>
+      <el-option style="color: #ff5300" label="连接" value="连接"/>
+      <el-option style="color: #ff5300" label="未连接" value="未连接"/>
+    </el-select>
     <div style="display: flex;flex-flow: row wrap;width: 100%">
-      <div v-for="item in pageInfo.transactionEquipment"
+      <div v-for="item in preTransactionFilter"
            style="position: relative;width: 33.3%;height: 100%;text-align: center">
         <el-card>
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%" theme="filled" size="24"
@@ -58,6 +66,8 @@
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToAntennaDetail(item)">详情</el-button>
           <el-button type="info">设备日志</el-button>
+          <el-button type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
+
         </el-card>
       </div>
       <!--    摄像头-->
@@ -71,6 +81,7 @@
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToCameraDetail(item)">详情</el-button>
           <el-button @click="deviceLogVisible=true" type="info">设备日志</el-button>
+          <el-button type="danger" @click="openDeleteCameraDialog(item)">删除</el-button>
         </el-card>
       </div>
       <!--    诱导屏-->
@@ -85,6 +96,8 @@
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToInductionScreenDetail(item)">详情</el-button>
           <el-button type="info">设备日志</el-button>
+          <el-button type="danger" @click="openDeleteChildDialog(3)">删除</el-button>
+
         </el-card>
       </div>
     </div>
@@ -347,22 +360,168 @@
       width="30%"
   >
     <h2 style="color: #d21632">确认删除？</h2>
-    <h1>{{pageInfo.currentEquipment.transactionName}}</h1>
+    <h1>{{ pageInfo.currentEquipment.transactionName }}</h1>
     <br>
     <el-button type="primary" @click="makeSureDeleteParent">确定</el-button>
     <el-button @click="deleteParentVisible=false">取消</el-button>
   </el-dialog>
 
+  <!--  新增子设备对话框-->
+  <el-dialog
+      title="添加子设备"
+      v-model="addChildVisible"
+      width="50%"
+      style="text-align: center"
+  >
+    <el-select v-model="addChildSelect" style="width: 50%" placeholder="选择添加设备类型">
+      <el-option label="ETC天线" value="1"/>
+      <el-option label="摄像头" value="2"/>
+      <el-option label="诱导屏" value="3"/>
+    </el-select>
+    <br><br>
+    <div v-if="addChildSelect == 1">
+      <h2>添加ETC天线</h2>
+      <div v-if="pageInfo.antennas.length == 0">
+        <el-form label-width="100px">
+          <el-form-item label="设备名称">
+            <el-input v-model="pageInfo.addAntenna.antennaName"/>
+          </el-form-item>
+          <el-form-item label="安装日期">
+            <el-date-picker v-model="pageInfo.addAntenna.installationDate"/>
+          </el-form-item>
+          <el-form-item label="设备IP">
+            <el-input v-model="pageInfo.addAntenna.equipmentIp"/>
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="pageInfo.addAntenna.state">
+              <el-option label="连接" value="连接"/>
+              <el-option label="未连接" value="未连接"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="波束宽度">
+            <el-input-number min="0" max="80" v-model="pageInfo.addAntenna.beamWidth"/>
+            度
+          </el-form-item>
+          <el-form-item label="读取距离">
+            <el-input-number max="200" min="0" v-model="pageInfo.addAntenna.readRange"/>
+            米
+          </el-form-item>
+          <el-form-item label="工作频率">
+            <el-input-number max="10" min="0" v-model="pageInfo.addAntenna.frequency"/>
+            GHz
+          </el-form-item>
+          <el-form-item label="所属设备">
+            <el-input v-model="pageInfo.currentEquipment.transactionName" disabled/>
+          </el-form-item>
+          <el-button type="primary" @click="makeSureAddAntenna">确定</el-button>
+          <el-button type="danger" @click="addChildVisible=false">取消</el-button>
+        </el-form>
+      </div>
+      <h3 style="color: #d21632" v-else>该预交易门架设备已有ETC天线，1个预交易门架设备仅能拥有一个ETC天线</h3>
+    </div>
+    <div v-if="addChildSelect == 2">
+      <h2>添加摄像头</h2>
+      <el-form label-width="100px">
+        <el-form-item label="设备名称">
+          <el-input v-model="pageInfo.addCamera.cameraName"/>
+        </el-form-item>
+        <el-form-item label="安装日期">
+          <el-date-picker v-model="pageInfo.addCamera.installationDate"/>
+        </el-form-item>
+        <el-form-item label="设备IP">
+          <el-input v-model="pageInfo.addCamera.equipmentIp"/>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="pageInfo.addCamera.state">
+            <el-option label="连接" value="连接"/>
+            <el-option label="未连接" value="未连接"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="焦距">
+          <el-input-number min="0" max="200" v-model="pageInfo.addCamera.focalLength"/>
+          mm
+        </el-form-item>
+        <el-form-item label="光圈">
+          <el-input-number max="20" min="0" v-model="pageInfo.addCamera.aperture"/>
+          f
+        </el-form-item>
+        <el-form-item label="所属设备">
+          <el-input v-model="pageInfo.currentEquipment.transactionName" disabled/>
+        </el-form-item>
+        <el-button type="primary" @click="makeSureAddCamera">确定</el-button>
+        <el-button type="danger" @click="addChildVisible=false">取消</el-button>
+      </el-form>
+    </div>
+    <div v-if="addChildSelect == 3">
+      <h2>添加诱导屏</h2>
+      <div v-if="pageInfo.inductionScreens.length == 0">
+        <el-form label-width="100px">
+          <el-form-item label="设备名称">
+            <el-input v-model="pageInfo.addInductionScreen.inductionScreenName"/>
+          </el-form-item>
+          <el-form-item label="安装日期">
+            <el-date-picker v-model="pageInfo.addInductionScreen.installationDate"/>
+          </el-form-item>
+          <el-form-item label="设备IP">
+            <el-input v-model="pageInfo.addInductionScreen.equipmentIp"/>
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="pageInfo.addInductionScreen.state">
+              <el-option label="连接" value="连接"/>
+              <el-option label="未连接" value="未连接"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="亮度">
+            <el-input-number min="0" max="100" v-model="pageInfo.addInductionScreen.brightness"/>
+          </el-form-item>
+          <el-form-item label="对比度">
+            <el-input-number max="100" min="0" v-model="pageInfo.addInductionScreen.contrastRatio"/>
+          </el-form-item>
+          <el-form-item label="显示率">
+            <el-input-number max="100" min="0" v-model="pageInfo.addInductionScreen.displayRate"/>
+          </el-form-item>
+          <el-form-item label="所属设备">
+            <el-input v-model="pageInfo.currentEquipment.transactionName" disabled/>
+          </el-form-item>
+          <el-button type="primary" @click="makeSureAddInductionScreen">确定</el-button>
+          <el-button type="danger" @click="addChildVisible=false">取消</el-button>
+        </el-form>
+      </div>
+      <h3 style="color: #d21632" v-else>该预交易门架设备已有诱导屏，1个预交易门架设备仅能拥有一个诱导屏</h3>
+    </div>
+  </el-dialog>
+
+  <!--  删除子设备-->
+  <el-dialog
+      title="删除子设备"
+      v-model="deleteChildVisible"
+      width="30%"
+      style="text-align: center"
+  >
+    <template v-slot:title>
+      {{
+        currentType == 1 ? '删除ETC天线' : currentType == 2 ? '删除摄像头' : '删除诱导屏'
+      }}
+    </template>
+    <h2>确认删除?</h2>
+    <h1 v-if="currentType==1" style="color: #d21632">{{ pageInfo.antennas[0].antennaName }}</h1>
+    <h1 v-else-if="currentType==2" style="color: #d21632">{{ pageInfo.currentCamera.cameraName }}</h1>
+    <h1 v-else-if="currentType==3" style="color:#d21632;">{{ pageInfo.inductionScreens[0].inductionScreenName }}</h1>
+
+    <br>
+    <el-button type="primary" @click="makeSureDeleteChild">确定</el-button>
+    <el-button @click="deleteChildVisible=false">取消</el-button>
+  </el-dialog>
+
 </template>
 
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import request from "../../request/request.ts";
 import {
   Antenna,
   Camera,
   InductionScreen,
-  LaneSmartDevice,
   preTransactionGantryEquipment
 } from "../../utils/interface.ts";
 import {CheckOne, CloseOne, Editor} from "@icon-park/vue-next"
@@ -375,12 +534,12 @@ const myStore = store()
 const detailVisible = ref(false)
 
 const pageInfo = reactive({
-  transactionEquipment: {} as preTransactionGantryEquipment[],
+  transactionEquipment: [] as preTransactionGantryEquipment[],
   editTransactionEquipment: {} as preTransactionGantryEquipment,
   currentEquipment: {} as preTransactionGantryEquipment,
-  cameraList: {} as Camera[],
-  antennas: {} as Antenna[],
-  inductionScreens: {} as InductionScreen[],
+  cameraList: [] as Camera[],
+  antennas: [] as Antenna[],
+  inductionScreens: [] as InductionScreen[],
   currentAntenna: {} as Antenna,
   currentCamera: {} as Camera,
   currentInductionScreen: {} as InductionScreen,
@@ -389,6 +548,9 @@ const pageInfo = reactive({
   editInductionScreen: {} as InductionScreen,
   // 添加
   addTransactionEquipment: {} as preTransactionGantryEquipment,
+  addCamera: {} as Camera,
+  addAntenna: {} as Antenna,
+  addInductionScreen: {} as InductionScreen,
 })
 
 //预交易门架设备中子设备的类型的数量
@@ -398,9 +560,9 @@ const goToDetail = (equipment: preTransactionGantryEquipment) => {
   detailNum.value = 0
   detailVisible.value = true
   pageInfo.currentEquipment = equipment
-  pageInfo.antennas = reactive({} as Antenna[])
-  pageInfo.cameraList = reactive({} as Camera[])
-  pageInfo.inductionScreens = reactive({} as InductionScreen[])
+  pageInfo.antennas = reactive([] as Antenna[])
+  pageInfo.cameraList = reactive([] as Camera[])
+  pageInfo.inductionScreens = reactive([] as InductionScreen[])
   request.get("/pre-transaction-gantry-equipment-entity/getTransactionDetailById/" + equipment.transactionId).then(res => {
     console.log(res.data)
     if (res.data.data.cameraEntities.length != 0) {
@@ -538,12 +700,122 @@ const openDeleteDialog = (item: preTransactionGantryEquipment) => {
 }
 
 const makeSureDeleteParent = () => {
-  request.get("/pre-transaction-gantry-equipment-entity/deleteTransactionDetail/"+pageInfo.currentEquipment.transactionId).then(res =>{
+  request.get("/pre-transaction-gantry-equipment-entity/deleteTransactionDetail/" + pageInfo.currentEquipment.transactionId).then(res => {
     pageInfo.transactionEquipment = res.data
     ElMessage.success("删除成功")
     deleteParentVisible.value = false
   })
 }
+
+/**
+ * 新增子设备
+ */
+
+//新增子设备对话框可见性
+const addChildVisible = ref(false)
+//新增子设备，选择新增哪个子设备
+const addChildSelect = ref('')
+//打开新增子设备对话框
+const openAddChildDialog = () => {
+  addChildVisible.value = true
+  addChildSelect.value = ''
+  pageInfo.addCamera = {} as Camera
+  pageInfo.addAntenna = {} as Antenna
+  pageInfo.addInductionScreen = {} as InductionScreen
+}
+
+//确认新增ETC天线
+const makeSureAddAntenna = () => {
+  pageInfo.addAntenna.transactionId = pageInfo.currentEquipment.transactionId
+  request.post("/etc-antenna-entity/addAntenna", pageInfo.addAntenna).then(res => {
+    pageInfo.antennas[0] = res.data
+    ElMessage.success("添加成功")
+    addChildVisible.value = false
+    detailNum.value++
+  })
+}
+
+//确认新增摄像头
+const makeSureAddCamera = () => {
+  pageInfo.addCamera.transactionId = pageInfo.currentEquipment.transactionId
+  request.post("/camera-entity/addCamera", pageInfo.addCamera).then(res => {
+    pageInfo.cameraList[0] = res.data
+    ElMessage.success("添加成功")
+    addChildVisible.value = false
+    detailNum.value++
+  })
+}
+
+//确认新增诱导屏
+const makeSureAddInductionScreen = () => {
+  pageInfo.addInductionScreen.transactionId = pageInfo.currentEquipment.transactionId
+  request.post("/induction-screen-entity/addInductionScreen", pageInfo.addInductionScreen).then(res => {
+    pageInfo.inductionScreens[0] = res.data
+    ElMessage.success("添加成功")
+    addChildVisible.value = false
+    detailNum.value++
+  })
+}
+
+/**
+ * 删除子设备
+ */
+
+//删除子设备对话框可见性
+const deleteChildVisible = ref(false)
+
+const openDeleteChildDialog = (type: number) => {
+  deleteChildVisible.value = true
+  currentType.value = type
+}
+//因为摄像头有多个，所以需要记录当前删除的是哪个摄像头
+const openDeleteCameraDialog = (camera: Camera) => {
+  pageInfo.currentCamera = camera
+  deleteChildVisible.value = true
+  currentType.value = 2
+}
+
+const makeSureDeleteChild = () => {
+  deleteChildVisible.value = false
+  if (currentType.value == 1) {
+    request.get("/etc-antenna-entity/deleteAntenna/" + pageInfo.antennas[0].antennaId).then(res => {
+      deleteChildVisible.value = false
+      pageInfo.antennas = [] as Antenna[]
+      ElMessage.success("删除成功")
+      detailNum.value--
+    })
+  } else if (currentType.value == 2) {
+    request.get("/camera-entity/deleteCamera/" + pageInfo.currentCamera.cameraId + "," + pageInfo.currentEquipment.transactionId).then(res => {
+      pageInfo.cameraList = res.data
+      ElMessage.success("删除成功")
+      deleteChildVisible.value = false
+      detailNum.value--
+    })
+  } else {
+    request.get("/induction-screen-entity/deleteInductionScreen/" + pageInfo.inductionScreens[0].inductionScreenId).then(res => {
+      pageInfo.inductionScreens = [] as InductionScreen[]
+      ElMessage.success("删除成功")
+      deleteChildVisible.value = false
+      detailNum.value--
+    })
+  }
+}
+
+/**
+ * 查询与筛选
+ */
+
+//父设备查询与筛选
+const searchParent = ref('')
+const stateSelectParent = ref('')
+
+const preTransactionFilter = computed(() => {
+  return pageInfo.transactionEquipment.filter((item) => {
+    return (item.transactionName.includes(searchParent.value) || item.equipmentIp.includes(searchParent.value))
+        && (item.state==stateSelectParent.value || stateSelectParent.value=='')
+  })
+})
+
 
 //查看设备日志
 const deviceLogVisible = ref(false)
@@ -571,6 +843,7 @@ const testData2 = [
 onMounted(() => {
   request.get("/pre-transaction-gantry-equipment-entity/getAllTransactionEquipment").then(res => {
     pageInfo.transactionEquipment = res.data
+    console.log(pageInfo.transactionEquipment)
   })
 })
 
