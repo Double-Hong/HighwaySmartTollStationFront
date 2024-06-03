@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {store} from "../../utils/store.ts";
 
-import {Devices, ProjectorTwo, MicroSlrCamera,WaterfallsH,Vial} from "@icon-park/vue-next";
+import {Devices, ProjectorTwo, MicroSlrCamera,WaterfallsH,Vial,Log} from "@icon-park/vue-next";
 
 const myStore = store()
 const handleOpen = (key: string, keyPath: string[]) => {
@@ -40,6 +40,10 @@ const handleClose = (key: string, keyPath: string[]) => {
     <el-menu-item v-if="myStore.getUserType() == 1" index="5" @click="myStore.contentDeviceVisible=5">
       <waterfalls-h theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
       <span>&nbsp子设备详情</span>
+    </el-menu-item>
+    <el-menu-item index="6" @click="myStore.contentDeviceVisible=6">
+      <log theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
+      <span>&nbsp设备日志</span>
     </el-menu-item>
 
   </el-menu>

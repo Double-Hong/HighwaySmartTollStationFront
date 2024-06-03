@@ -21,7 +21,7 @@
     <el-table-column width="150px" label="操作">
       <template #default="{row}">
         <!--        <el-button type="primary" size="small" @click="edit(row)">编辑</el-button>-->
-        <el-button type="info" size="default" @click="">日志</el-button>
+        <el-button type="info" size="default" @click="emit('submit')">日志</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -35,6 +35,9 @@ import {CheckOne, CloseOne} from "@icon-park/vue-next";
 const props = defineProps(['formData'])
 
 const formData = reactive(props.formData)
+
+// 组件接收函数
+const emit = defineEmits(['submit'])
 
 const stateSelect = ref('')
 

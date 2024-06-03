@@ -9,7 +9,7 @@ export interface userInfo {
     type: string,
     phone: string,
     address: string,
-    state:string
+    state: string
 }
 
 //预交易门架设备
@@ -26,7 +26,7 @@ export interface Camera {
     cameraId: string,
     laneInfrastructureId: string,
     transactionId: string,
-    fatherName?:string
+    fatherName?: string
     cameraName: string,
     installationDate: string,
     focalLength: number,
@@ -39,7 +39,7 @@ export interface Camera {
 export interface Antenna {
     antennaId: string;
     transactionId: string;
-    fatherName?:string
+    fatherName?: string
     antennaName: string;
     installationDate: string;
     frequency: number;
@@ -53,7 +53,7 @@ export interface Antenna {
 export interface InductionScreen {
     inductionScreenId: string;
     transactionId: string;
-    fatherName?:string
+    fatherName?: string
     inductionScreenName: string;
     installationDate: string;
     brightness: number;
@@ -78,7 +78,7 @@ export interface LaneSmartDevice {
 export interface ExportPaymentEquipment {
     exportEquipmentId: string;
     laneSmartDeviceId: string;
-    fatherName?:string
+    fatherName?: string
     exportName: string;
     installationDate: string;
     state: string;
@@ -91,7 +91,7 @@ export interface ExportPaymentEquipment {
 export interface EntranceEquipment {
     entranceEquipmentId: string;
     laneSmartDeviceId: string;
-    fatherName?:string
+    fatherName?: string
     entranceName: string;
     installationDate: string;
     state: string;
@@ -103,7 +103,7 @@ export interface EntranceEquipment {
 export interface AwningLight {
     awningLightId: string;
     laneInfrastructureId: string;
-    fatherName?:string
+    fatherName?: string
     awningLightName: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
     state: string;
@@ -116,7 +116,7 @@ export interface AwningLight {
 export interface CarDetector {
     carDetectorId: string;
     laneInfrastructureId: string;
-    fatherName?:string
+    fatherName?: string
     carDetectorName: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
     state: string;
@@ -129,7 +129,7 @@ export interface CarDetector {
 export interface IntelBoard {
     ledBoardId: string;
     laneInfrastructureId: string;
-    fatherName?:string
+    fatherName?: string
     ledBoardName: string;
     state: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
@@ -143,7 +143,7 @@ export interface IntelBoard {
 export interface LaneWeighingEquipment {
     laneWeighingId: string;
     laneInfrastructureId: string;
-    fatherName?:string
+    fatherName?: string
     laneWeighingName: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
     state: string;
@@ -200,13 +200,34 @@ export interface FaultLog {
 
 //维修日志
 export interface MaintenanceLog {
-    maintenanceId:string,
-    logId:string,
-    maintainTime:string,
-    maintainDescription:string,
-    maintainResult:string,
-    maintainPeople:string,
-    deviceName:string,
+    maintenanceId: string,
+    logId: string,
+    maintainTime: string,
+    maintainDescription: string,
+    maintainResult: string,
+    maintainPeople: string,
+    deviceName: string,
+}
+
+/**
+ * 设备日志
+ */
+
+//摄像头日志
+export interface CameraLog {
+    logId: string,
+    cameraId: string,
+    equipmentName?:string,
+    logTime: string,
+    state: string,
+    errorCode: string,
+    description: string,
+    focalLength: number,
+    aperture: string,
+    equipmentIp: string,
+    logType: string,
+    writerId: string,
+    writerName?: string,
 }
 
 export enum userType {
