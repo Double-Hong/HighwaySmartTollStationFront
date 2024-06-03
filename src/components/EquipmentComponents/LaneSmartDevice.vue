@@ -35,7 +35,7 @@
           <el-button type="primary" @click="goToDetail(item)">详细信息</el-button>
           <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteDialog(item)">删除</el-button>
         </el-card>
-
+        <br>
       </div>
     </div>
 
@@ -49,7 +49,7 @@
     <h1 v-if="!flag2" style="text-align: center">该设备尚未关联出口设备，请尽快添加</h1>
     <div style="display: flex;flex-flow: row wrap;">
       <div v-if="flag1" style="width: 33%;height: 100%;position: relative;text-align: center">
-        <el-card>
+        <el-card style="width: 95%;left: 2.5%;position: relative">
           <check-one v-if="pageInfo.entranceEquipment.state=='连接'" style="position: absolute;left: 5%;top: 5%"
                      theme="filled"
                      size="24" fill="#09eb49"/>
@@ -59,11 +59,11 @@
           <p>IP地址:{{ pageInfo.entranceEquipment.equipmentIp }}</p>
           <el-button @click="goToEntranceDetail">详情</el-button>
           <el-button type="info">设备日志</el-button>
-          <el-button type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
         </el-card>
       </div>
       <div v-if="flag2" style="width: 33%;height: 100%;position: relative;text-align: center">
-        <el-card>
+        <el-card style="width: 95%;left: 2.5%;position: relative">
           <check-one v-if="pageInfo.exportPaymentEquipment.state=='连接'" style="position: absolute;left: 5%;top: 5%"
                      theme="filled"
                      size="24" fill="#09eb49"/>
@@ -73,7 +73,7 @@
           <p>IP地址:{{ pageInfo.exportPaymentEquipment.equipmentIp }}</p>
           <el-button @click="goToExportDetail">详情</el-button>
           <el-button type="info">设备日志</el-button>
-          <el-button type="danger" @click="openDeleteChildDialog(2)">删除</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(2)">删除</el-button>
         </el-card>
       </div>
     </div>
@@ -147,10 +147,10 @@
         <el-input v-model="pageInfo.editEntranceEquipment.entranceName"/>
       </el-form-item>
       <el-form-item label="IP地址">
-        <el-input disabled v-model="pageInfo.editEntranceEquipment.equipmentIp"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editEntranceEquipment.equipmentIp"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input disabled v-model="pageInfo.editEntranceEquipment.installationDate"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editEntranceEquipment.installationDate"/>
       </el-form-item>
       <el-form-item label="状态">
         <el-input v-model="pageInfo.editEntranceEquipment.state"/>
@@ -168,10 +168,10 @@
         <el-input v-model="pageInfo.editExportPaymentEquipment.exportName"/>
       </el-form-item>
       <el-form-item label="IP地址">
-        <el-input disabled v-model="pageInfo.editExportPaymentEquipment.equipmentIp"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editExportPaymentEquipment.equipmentIp"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input disabled v-model="pageInfo.editExportPaymentEquipment.installationDate"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editExportPaymentEquipment.installationDate"/>
       </el-form-item>
       <el-form-item label="状态">
         <el-input v-model="pageInfo.editExportPaymentEquipment.state"/>
@@ -227,7 +227,7 @@
         <el-input v-model="pageInfo.editLaneSmartDevice.laneSmartDeviceName"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input v-model="pageInfo.editLaneSmartDevice.installationDate" disabled/>
+        <el-date-picker v-model="pageInfo.editLaneSmartDevice.installationDate"/>
       </el-form-item>
       <el-form-item label="IP地址">
         <el-input v-model="pageInfo.editLaneSmartDevice.equipmentIp"/>
@@ -611,5 +611,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
+.el-card{
+  width: 95%;left: 2.5%;position: relative;
+}
 </style>

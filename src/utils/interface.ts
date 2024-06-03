@@ -26,6 +26,7 @@ export interface Camera {
     cameraId: string,
     laneInfrastructureId: string,
     transactionId: string,
+    fatherName?:string
     cameraName: string,
     installationDate: string,
     focalLength: number,
@@ -38,6 +39,7 @@ export interface Camera {
 export interface Antenna {
     antennaId: string;
     transactionId: string;
+    fatherName?:string
     antennaName: string;
     installationDate: string;
     frequency: number;
@@ -51,6 +53,7 @@ export interface Antenna {
 export interface InductionScreen {
     inductionScreenId: string;
     transactionId: string;
+    fatherName?:string
     inductionScreenName: string;
     installationDate: string;
     brightness: number;
@@ -75,6 +78,7 @@ export interface LaneSmartDevice {
 export interface ExportPaymentEquipment {
     exportEquipmentId: string;
     laneSmartDeviceId: string;
+    fatherName?:string
     exportName: string;
     installationDate: string;
     state: string;
@@ -87,6 +91,7 @@ export interface ExportPaymentEquipment {
 export interface EntranceEquipment {
     entranceEquipmentId: string;
     laneSmartDeviceId: string;
+    fatherName?:string
     entranceName: string;
     installationDate: string;
     state: string;
@@ -98,6 +103,7 @@ export interface EntranceEquipment {
 export interface AwningLight {
     awningLightId: string;
     laneInfrastructureId: string;
+    fatherName?:string
     awningLightName: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
     state: string;
@@ -110,6 +116,7 @@ export interface AwningLight {
 export interface CarDetector {
     carDetectorId: string;
     laneInfrastructureId: string;
+    fatherName?:string
     carDetectorName: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
     state: string;
@@ -122,6 +129,7 @@ export interface CarDetector {
 export interface IntelBoard {
     ledBoardId: string;
     laneInfrastructureId: string;
+    fatherName?:string
     ledBoardName: string;
     state: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
@@ -135,6 +143,7 @@ export interface IntelBoard {
 export interface LaneWeighingEquipment {
     laneWeighingId: string;
     laneInfrastructureId: string;
+    fatherName?:string
     laneWeighingName: string;
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
     state: string;

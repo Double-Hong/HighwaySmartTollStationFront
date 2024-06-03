@@ -14,6 +14,7 @@
     <LaneSmartDevice v-if="myStore.contentDeviceVisible==2"/>
     <LaneInfrastructure v-if="myStore.contentDeviceVisible==3"/>
     <Test v-if="myStore.contentDeviceVisible==4"/>
+    <ChildrenEquiments v-if="myStore.contentDeviceVisible==5"/>
   </div>
 </div>
 
@@ -28,6 +29,7 @@ import router from "../router";
 import LaneSmartDevice from "../components/EquipmentComponents/LaneSmartDevice.vue";
 import LaneInfrastructure from "../components/EquipmentComponents/LaneInfrastructure.vue";
 import Test from "../components/EquipmentComponents/Test.vue";
+import ChildrenEquiments from "../components/EquipmentComponents/ChildrenEquiments.vue";
 
 const myStore = store()
 

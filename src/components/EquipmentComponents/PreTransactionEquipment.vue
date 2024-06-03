@@ -16,7 +16,8 @@
     <h1 style="text-align: center">预交易门架设备</h1>
     <el-input v-model="searchParent" placeholder="请输入关键字" style="width: 10%;position: absolute;left: 10%;top: 7%"
               clearable/>
-    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%" v-model="stateSelectParent">
+    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%"
+               v-model="stateSelectParent">
       <el-option style="color: #ff5300" label="全部" value=""/>
       <el-option style="color: #ff5300" label="连接" value="连接"/>
       <el-option style="color: #ff5300" label="未连接" value="未连接"/>
@@ -24,7 +25,7 @@
     <div style="display: flex;flex-flow: row wrap;width: 100%">
       <div v-for="item in preTransactionFilter"
            style="position: relative;width: 33.3%;height: 100%;text-align: center">
-        <el-card>
+        <el-card style="width: 95%;left: 2.5%;position: relative">
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%" theme="filled" size="24"
                      fill="#09eb49"/>
           <close-one v-else style="position: absolute;left: 5%;top: 5%" theme="filled" size="24" fill="#eb0909"/>
@@ -39,7 +40,7 @@
           <el-button type="primary" @click="goToDetail(item)">详细信息</el-button>
           <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteDialog(item)">删除</el-button>
         </el-card>
-
+        <br>
       </div>
     </div>
   </div>
@@ -57,7 +58,7 @@
     <div v-else style="display: flex;flex-flow: row wrap;">
       <!--    ETC天线-->
       <div v-for="item in pageInfo.antennas" style="width: 33%;height: 100%;position: relative;text-align: center">
-        <el-card>
+        <el-card style="width: 95%;left: 2.5%;position: relative">
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%" theme="filled"
                      size="24" fill="#09eb49"/>
           <close-one v-else style="position: absolute;left: 5%;top: 5%" theme="filled" size="24" fill="#eb0909"/>
@@ -66,13 +67,14 @@
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToAntennaDetail(item)">详情</el-button>
           <el-button type="info">设备日志</el-button>
-          <el-button type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
-
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除
+          </el-button>
         </el-card>
+        <br>
       </div>
       <!--    摄像头-->
       <div v-for="item in pageInfo.cameraList" style="width: 33%;height: 100%;position: relative;text-align: center">
-        <el-card>
+        <el-card style="width: 95%;left: 2.5%;position: relative">
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%" theme="filled" size="24"
                      fill="#09eb49"/>
           <close-one v-else style="position: absolute;left: 5%;top: 5%" theme="filled" size="24" fill="#eb0909"/>
@@ -81,13 +83,15 @@
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToCameraDetail(item)">详情</el-button>
           <el-button @click="deviceLogVisible=true" type="info">设备日志</el-button>
-          <el-button type="danger" @click="openDeleteCameraDialog(item)">删除</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteCameraDialog(item)">删除
+          </el-button>
         </el-card>
+        <br>
       </div>
       <!--    诱导屏-->
       <div v-for="item in pageInfo.inductionScreens"
            style="width: 33%;height: 100%;position: relative;text-align: center">
-        <el-card>
+        <el-card style="width: 95%;left: 2.5%;position: relative">
           <check-one v-if="item.state=='连接'" style="position: absolute;left: 5%;top: 5%"
                      theme="filled" size="24" fill="#09eb49"/>
           <close-one v-else style="position: absolute;left: 5%;top: 5%" theme="filled" size="24" fill="#eb0909"/>
@@ -96,9 +100,10 @@
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToInductionScreenDetail(item)">详情</el-button>
           <el-button type="info">设备日志</el-button>
-          <el-button type="danger" @click="openDeleteChildDialog(3)">删除</el-button>
-
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(3)">删除
+          </el-button>
         </el-card>
+        <br>
       </div>
     </div>
   </div>
@@ -212,10 +217,10 @@
         <el-input v-model="pageInfo.editAntenna.antennaName"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input disabled v-model="pageInfo.editAntenna.installationDate"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editAntenna.installationDate"/>
       </el-form-item>
       <el-form-item label="IP地址">
-        <el-input disabled v-model="pageInfo.editAntenna.equipmentIp"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editAntenna.equipmentIp"/>
       </el-form-item>
       <el-form-item label="频率(GHz)">
         <el-input v-model="pageInfo.editAntenna.frequency"/>
@@ -236,10 +241,10 @@
         <el-input v-model="pageInfo.editCamera.cameraName"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input disabled v-model="pageInfo.editCamera.installationDate"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editCamera.installationDate"/>
       </el-form-item>
       <el-form-item label="IP地址">
-        <el-input disabled v-model="pageInfo.editCamera.equipmentIp"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editCamera.equipmentIp"/>
       </el-form-item>
       <el-form-item label="焦距(毫米)">
         <el-input v-model="pageInfo.editCamera.focalLength"/>
@@ -257,10 +262,10 @@
         <el-input v-model="pageInfo.editInductionScreen.inductionScreenName"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input disabled v-model="pageInfo.editInductionScreen.installationDate"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editInductionScreen.installationDate"/>
       </el-form-item>
       <el-form-item label="IP地址">
-        <el-input disabled v-model="pageInfo.editInductionScreen.equipmentIp"/>
+        <el-input :disabled="myStore.getUserType()!=1" v-model="pageInfo.editInductionScreen.equipmentIp"/>
       </el-form-item>
       <el-form-item label="亮度">
         <el-input-number min="0" max="100" v-model="pageInfo.editInductionScreen.brightness"/>
@@ -339,7 +344,7 @@
         <el-input v-model="pageInfo.editTransactionEquipment.transactionName"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input v-model="pageInfo.editTransactionEquipment.installationDate" disabled/>
+        <el-date-picker v-model="pageInfo.editTransactionEquipment.installationDate"/>
       </el-form-item>
       <el-form-item label="IP地址">
         <el-input v-model="pageInfo.editTransactionEquipment.equipmentIp"/>
@@ -812,7 +817,7 @@ const stateSelectParent = ref('')
 const preTransactionFilter = computed(() => {
   return pageInfo.transactionEquipment.filter((item) => {
     return (item.transactionName.includes(searchParent.value) || item.equipmentIp.includes(searchParent.value))
-        && (item.state==stateSelectParent.value || stateSelectParent.value=='')
+        && (item.state == stateSelectParent.value || stateSelectParent.value == '')
   })
 })
 
@@ -843,7 +848,6 @@ const testData2 = [
 onMounted(() => {
   request.get("/pre-transaction-gantry-equipment-entity/getAllTransactionEquipment").then(res => {
     pageInfo.transactionEquipment = res.data
-    console.log(pageInfo.transactionEquipment)
   })
 })
 

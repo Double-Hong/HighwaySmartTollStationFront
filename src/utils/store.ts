@@ -8,7 +8,9 @@ export const store = defineStore("all", () => {
     const contentLogVisible = ref(0)//日志管理界面的可见性
 
     const userInfo = ref<userInfo>(
-        {address: "", birthday: "", gender: "", phone: "", type: "", name: "", password: "", uid: "", username: ""})
+        {
+            state: "",
+            address: "", birthday: "", gender: "", phone: "", type: "", name: "", password: "", uid: "", username: ""})
 
     const setUserInfo = (info: userInfo) => {
         userInfo.value = info
@@ -30,8 +32,14 @@ export const store = defineStore("all", () => {
         currentUserId.value = id
     }
 
+    const getUserType = () =>{
+        return userInfo.value.type
+
+    }
+
     return {
         currentUserId, getCurrentUserId, setCurrentUserId, setUserInfo,
-        getUserInfo,setPassword,contentLogVisible,contentDeviceVisible
+        getUserInfo,setPassword,contentLogVisible,contentDeviceVisible,
+        getUserType
     }
 })

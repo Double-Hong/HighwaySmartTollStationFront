@@ -35,6 +35,7 @@
           <el-button type="primary" @click="goToDetail(item)">详细信息</el-button>
           <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteDialog(item)">删除</el-button>
         </el-card>
+        <br>
       </div>
     </div>
   </div>
@@ -60,8 +61,9 @@
             <p>IP地址:{{ pageInfo.currentAwningLight.equipmentIp }}</p>
             <el-button @click="goToAwningLightDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
           </el-card>
+          <br>
         </div>
         <div style="text-align: center;width: 33.3%;position: relative">
           <el-card>
@@ -74,8 +76,9 @@
             <p>IP地址:{{ pageInfo.currentCarDetector.equipmentIp }}</p>
             <el-button @click="goToCarDetectorDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button type="danger" @click="openDeleteChildDialog(2)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(2)">删除</el-button>
           </el-card>
+          <br>
         </div>
         <div style="text-align: center;width: 33.3%;position: relative">
           <el-card>
@@ -88,8 +91,9 @@
             <p>IP地址:{{ pageInfo.currentIntelBoard.equipmentIp }}</p>
             <el-button @click="goToIntelBoardDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button type="danger" @click="openDeleteChildDialog(3)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(3)">删除</el-button>
           </el-card>
+          <br>
         </div>
         <div style="text-align: center;width: 33.3%;position: relative">
           <el-card>
@@ -103,8 +107,9 @@
             <p>IP地址:{{ pageInfo.currentLaneWeighingEquipment.equipmentIp }}</p>
             <el-button @click="goToLaneWeighingEquipmentDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button type="danger" @click="openDeleteChildDialog(4)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(4)">删除</el-button>
           </el-card>
+          <br>
         </div>
 
       </div>
@@ -174,7 +179,7 @@
         <el-input v-model="pageInfo.editLaneInfrastructures.laneInfrastructureName"/>
       </el-form-item>
       <el-form-item label="安装日期">
-        <el-input v-model="pageInfo.editLaneInfrastructures.installationDate" disabled/>
+        <el-date-picker v-model="pageInfo.editLaneInfrastructures.installationDate"/>
       </el-form-item>
       <el-form-item label="IP地址">
         <el-input v-model="pageInfo.editLaneInfrastructures.equipmentIp"/>
@@ -767,5 +772,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
+.el-card{
+  width: 95%;left: 2.5%;position: relative;
+}
 </style>
