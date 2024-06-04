@@ -1,6 +1,6 @@
 <template>
   <el-table :data="formData.data" stripe>
-    <el-table-column v-for="item in formData.message" :prop="item.prop" :label="item.label">
+    <el-table-column v-for="item in formData.message" :prop="item.prop" :label="item.label" :width="item.label === '日志日期' ? '200' : ''">
       <template v-if="item.unit != null" v-slot:default="{row}">
         {{ row[item.prop] }}{{ item.unit }}
       </template>

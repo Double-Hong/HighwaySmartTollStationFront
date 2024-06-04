@@ -201,7 +201,8 @@
     </el-descriptions>
     <br>
     <el-button type="primary" @click="openEditChild">修改</el-button>
-    <el-button type="info">上报故障</el-button>
+    <el-button v-if="myStore.getUserType()!=3" type="info" @click="openReportFaultDialog">上报故障</el-button>
+    <!--    <el-button type="info">维修</el-button>-->
   </el-dialog>
   <!--  修改对话框-->
   <el-dialog
@@ -518,6 +519,19 @@
     <el-button @click="deleteChildVisible=false">取消</el-button>
   </el-dialog>
 
+  <el-dialog
+      title="上报故障"
+      width="30%"
+      v-model="reportFaultVisible"
+      style="text-align: center"
+      top="10vh"
+  >
+    <MyLogForm v-if="reportFaultVisible" :form-data="nowLogForm"
+               :ItsFatherName="pageInfo.currentEquipment.transactionName"
+               @submit="makeSureReportFault"
+    />
+  </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -532,6 +546,8 @@ import {
 import {CheckOne, CloseOne, Editor} from "@icon-park/vue-next"
 import {ElMessage} from "element-plus";
 import {store} from "../../utils/store.ts";
+import {cameraLogFormData} from "../FormComponent/logType.ts";
+import MyLogForm from "../FormComponent/MyLogForm.vue";
 
 
 const myStore = store()
@@ -821,6 +837,59 @@ const preTransactionFilter = computed(() => {
   })
 })
 
+/**
+ * 上报故障
+ */
+
+const reportFaultVisible = ref(false)
+
+let nowLogForm = reactive({})
+
+const openReportFaultDialog = () => {
+  reportFaultVisible.value = false
+  if (currentType.value == 1) {
+    nowLogForm = pageInfo.currentAntenna
+    reportFaultVisible.value = true
+  } else if (currentType.value == 2) {
+    cameraLogFormData.data.logTime = new Date().toLocaleDateString()+" "+new Date().toLocaleTimeString()
+    cameraLogFormData.data.cameraId = pageInfo.currentCamera.cameraId
+    cameraLogFormData.data.equipmentName = pageInfo.currentCamera.cameraName
+    cameraLogFormData.data.equipmentIp = pageInfo.currentCamera.equipmentIp
+    cameraLogFormData.data.logType = "故障日志"
+    cameraLogFormData.data.state = "未连接"
+    cameraLogFormData.data.description = ""
+    cameraLogFormData.data.writerName = myStore.getUserInfo().name
+    cameraLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    cameraLogFormData.data.aperture = pageInfo.currentCamera.aperture
+    cameraLogFormData.data.focalLength = pageInfo.currentCamera.focalLength
+
+    nowLogForm = cameraLogFormData
+    reportFaultVisible.value = true
+  } else {
+    nowLogForm = pageInfo.currentInductionScreen
+    reportFaultVisible.value = true
+  }
+}
+
+const makeSureReportFault = () => {
+  // request.post("/fault-log-entity/addFaultLog", nowLogForm).then(res => {
+  //   ElMessage.success("上报成功")
+  //   reportFaultVisible.value = false
+  // })
+  if (currentType.value == 1){
+
+  }else if (currentType.value == 2){
+    request.post("/camera-log-entity/addCameraLog",cameraLogFormData.data).then(res =>{
+      ElMessage.success("上报成功")
+      pageInfo.currentCamera = res.data
+      reportFaultVisible.value = false
+    })
+  }else if (currentType.value == 3){
+
+  }
+  childDetailVisible.value = false
+}
 
 //查看设备日志
 const deviceLogVisible = ref(false)

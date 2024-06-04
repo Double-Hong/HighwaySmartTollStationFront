@@ -37,7 +37,7 @@ const handleClose = (key: string, keyPath: string[]) => {
       <vial theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
       <span>&nbspTest</span>
     </el-menu-item>
-    <el-menu-item v-if="myStore.getUserType() == 1" index="5" @click="myStore.contentDeviceVisible=5">
+    <el-menu-item index="5" @click="myStore.contentDeviceVisible=5">
       <waterfalls-h theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
       <span>&nbsp子设备详情</span>
     </el-menu-item>

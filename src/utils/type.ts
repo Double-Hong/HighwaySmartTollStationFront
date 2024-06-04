@@ -5,6 +5,18 @@ export type formDataType<T> = {
         "label": string,
         "name": string,
         "type": string,
+        "unit"?:string,
+    }>
+}
+
+export type logFormDataType<T> = {
+    "data": T,
+    "message": Array<{
+        "label": string,
+        "name": string,
+        "prop": string,
+        "unit"?: string,
+        "type"?:string,
     }>
 }
 

@@ -140,6 +140,7 @@
                    :ItsFatherName="pageInfo.currentLaneWeighingEquipment.laneWeighingName"/>
     <br>
     <el-button type="primary" @click="editChildVisible = true">修改</el-button>
+    <el-button v-if="myStore.getUserType()!=3" type="info">上报故障</el-button>
   </el-dialog>
 
   <el-dialog

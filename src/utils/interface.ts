@@ -19,6 +19,8 @@ export interface preTransactionGantryEquipment {
     installationDate: string,
     state: string,
     equipmentIp: string,
+    childrenNumber:number,
+    currentNumber:number,
 }
 
 //摄像头
@@ -72,6 +74,8 @@ export interface LaneSmartDevice {
     installationDate: string;
     state: string;
     equipmentIp: string;
+    childrenNumber:number,
+    currentNumber:number,
 }
 
 //出口自助缴费设备
@@ -163,6 +167,8 @@ export interface LaneInfrastructure {
     installationDate: string; // 这里假设你已经将日期转换为合适的字符串格式
     state: string;
     equipmentIp: string;
+    childrenNumber:number,
+    currentNumber:number,
 }
 
 //维修人员日志

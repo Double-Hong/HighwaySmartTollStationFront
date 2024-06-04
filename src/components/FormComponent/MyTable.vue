@@ -18,10 +18,11 @@
         <close-one v-else theme="filled" size="24" fill="#eb0909"/>
       </template>
     </el-table-column>
-    <el-table-column width="150px" label="操作">
+    <el-table-column width="180px" label="操作">
       <template #default="{row}">
         <!--        <el-button type="primary" size="small" @click="edit(row)">编辑</el-button>-->
-        <el-button type="info" size="default" @click="emit('submit')">日志</el-button>
+        <el-button type="info" size="default" @click="emit('submit',row)">日志</el-button>
+        <el-button v-if="myStore.getUserType() == 3" type="primary" size="default" @click="emit('fix',row)">维修</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -31,13 +32,16 @@
 <script setup lang="ts">
 import {computed, reactive, ref} from "vue";
 import {CheckOne, CloseOne} from "@icon-park/vue-next";
+import {store} from "../../utils/store.ts";
 // 组件接收的props
 const props = defineProps(['formData'])
 
 const formData = reactive(props.formData)
 
+const myStore = store()
+
 // 组件接收函数
-const emit = defineEmits(['submit'])
+const emit = defineEmits(['submit','fix'])
 
 const stateSelect = ref('')
 
