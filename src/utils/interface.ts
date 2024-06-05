@@ -219,6 +219,24 @@ export interface MaintenanceLog {
  * 设备日志
  */
 
+
+
+export interface AwningLightLog {
+    logId: string;
+    awningLightId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    fixtureType:string,
+    brightness: number; // 亮度
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
 //摄像头日志
 export interface CameraLog {
     logId: string,
@@ -235,6 +253,121 @@ export interface CameraLog {
     writerId: string,
     writerName?: string,
 }
+
+export interface CarDetectorLog {
+    logId: string;
+    carDetectorId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    detectionMethod: string; // 检测方式
+    detectionRange: number; // 检测范围
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
+export interface EntranceEquipmentLog {
+    logId: string;
+    entranceEquipmentId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    cardNumber: number; // 机器内卡片数量
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
+export interface EtcAntennaLog {
+    logId: string;
+    antennaId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    frequency: number; // 工作频率
+    readRange: number; // 读取距离
+    beamWidth: number; // 波束宽度
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
+export interface ExportPaymentEquipmentLog {
+    logId: string;
+    exportEquipmentId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    receiptNumber: number; // 打印收据的纸的数量
+    scannerState: string; // 收费扫描器的状态
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
+export interface InductionScreenLog {
+    logId: string;
+    inductionScreenId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    brightness: number; // 亮度
+    contrastRatio: number; // 对比度
+    displayRate: number; // 显示率
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
+export interface IntelBoardLog {
+    logId: string;
+    ledBoardId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    displayRate: number; // 显示率
+    brightness: number; // 亮度
+    contrastRatio: number; // 对比度
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
+export interface LaneWeighingEquipmentLog {
+    logId: string;
+    laneWeighingId: string;
+    logTime: string;
+    state: string; // 状态（连接还是未连接）
+    errorCode: string; // 错误代码
+    description: string; // 日志描述
+    weighingMachineState: number; // 称重器状态
+    displayState: string; // 称重显示器状态
+    equipmentIp: string; // IP地址
+    logType: string; // 日志类型（维修日志或故障日志）
+    writerId: string; // 日志书写人ID
+    equipmentName?: string;
+    writerName?: string;
+}
+
 
 export enum userType {
     "管理员" = 1,

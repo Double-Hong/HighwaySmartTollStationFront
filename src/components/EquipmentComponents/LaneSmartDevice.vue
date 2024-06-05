@@ -132,7 +132,7 @@
     </div>
     <br>
     <el-button type="primary" @click="openEditChild">修改</el-button>
-    <el-button v-if="myStore.getUserType()!=3" type="info">上报故障</el-button>
+    <el-button v-if="myStore.getUserType()!=3" type="info" @click="openReportFaultDialog">上报故障</el-button>
   </el-dialog>
 
   <el-dialog
@@ -357,6 +357,19 @@
     <el-button @click="deleteChildVisible=false">取消</el-button>
   </el-dialog>
 
+  <el-dialog
+      title="上报故障"
+      width="30%"
+      v-model="reportFaultVisible"
+      style="text-align: center"
+      top="10vh"
+  >
+    <MyLogForm v-if="reportFaultVisible" :form-data="nowLogForm"
+               :ItsFatherName="pageInfo.currentDevice.laneSmartDeviceName"
+               @submit="makeSureReportFault"
+    />
+  </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -373,6 +386,8 @@ import {ElMessage} from "element-plus";
 import {store} from "../../utils/store.ts";
 import MyForm from "../FormComponent/MyForm.vue";
 import {addEntranceEquipmentData} from "../FormComponent/type.ts";
+import MyLogForm from "../FormComponent/MyLogForm.vue";
+import {entranceLogFormData, exportLogFormData, inductionLogFormData} from "../FormComponent/logType.ts";
 
 const detailVisible = ref(false)
 const pageInfo = reactive({
@@ -602,6 +617,72 @@ const laneSmartFilter = computed(() => {
         && (item.state==stateSelectParent.value || stateSelectParent.value=='')
   })
 })
+
+/**
+ * 上报故障
+ */
+
+const reportFaultVisible = ref(false)
+
+let nowLogForm = reactive({})
+
+const openReportFaultDialog = () => {
+  reportFaultVisible.value = false
+  if (currentType.value == 1) {
+    entranceLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    entranceLogFormData.data.entranceEquipmentId = pageInfo.entranceEquipment.entranceEquipmentId
+    entranceLogFormData.data.equipmentName = pageInfo.entranceEquipment.entranceName
+    entranceLogFormData.data.equipmentIp = pageInfo.entranceEquipment.equipmentIp
+    entranceLogFormData.data.logType = "故障日志"
+    entranceLogFormData.data.state = "未连接"
+    entranceLogFormData.data.description = ""
+    entranceLogFormData.data.writerName = myStore.getUserInfo().name
+    entranceLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    entranceLogFormData.data.cardNumber = pageInfo.entranceEquipment.cardNumber
+
+    nowLogForm = entranceLogFormData
+    reportFaultVisible.value = true
+  } else if (currentType.value == 2) {
+    exportLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    exportLogFormData.data.exportEquipmentId = pageInfo.exportPaymentEquipment.exportEquipmentId
+    exportLogFormData.data.equipmentName = pageInfo.exportPaymentEquipment.exportName
+    exportLogFormData.data.equipmentIp = pageInfo.exportPaymentEquipment.equipmentIp
+    exportLogFormData.data.logType = "故障日志"
+    exportLogFormData.data.state = "未连接"
+    exportLogFormData.data.description = ""
+    exportLogFormData.data.writerName = myStore.getUserInfo().name
+    exportLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    exportLogFormData.data.receiptNumber = pageInfo.exportPaymentEquipment.receiptNumber
+    exportLogFormData.data.scannerState = pageInfo.exportPaymentEquipment.scannerState
+
+    nowLogForm = exportLogFormData
+    reportFaultVisible.value = true
+  }
+}
+
+const makeSureReportFault = () => {
+  // request.post("/fault-log-entity/addFaultLog", nowLogForm).then(res => {
+  //   ElMessage.success("上报成功")
+  //   reportFaultVisible.value = false
+  // })
+  if (currentType.value == 1){
+    request.post("/entrance-equipment-log-entity/addEntranceEquipmentLog",entranceLogFormData.data).then(res=>{
+      ElMessage.success("上报成功")
+      pageInfo.entranceEquipment = res.data
+      reportFaultVisible.value = false
+    })
+  }else if (currentType.value == 2) {
+    request.post("/export-payment-equipment-log-entity/addExportPaymentEquipmentLog",exportLogFormData.data).then(res=>{
+      ElMessage.success("上报成功")
+      pageInfo.exportPaymentEquipment = res.data
+      reportFaultVisible.value = false
+    })
+  }
+  childDialogVisible.value = false
+  detailVisible.value = false
+}
 
 onMounted(() => {
   request.get("/lane-smart-device-entity/getAllLaneSmartDevice").then(res => {

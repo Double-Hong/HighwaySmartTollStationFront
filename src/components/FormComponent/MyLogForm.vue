@@ -26,9 +26,9 @@ const formData = reactive(props.formData)
       <el-input  v-else-if="item.type == 'textarea'" v-model="formData.data[item.prop]" type="textarea"/>
       <el-input  v-else v-model="formData.data[item.prop]" :disabled="(item.name == 'installationDate' || item.name == 'writerName' || item.name == 'state')&&(myStore.getUserType()!=1)"></el-input>
     </el-form-item>
-    <el-form-item label="所属设备">
-      <el-input v-model="props.ItsFatherName" disabled></el-input>
-    </el-form-item>
+<!--    <el-form-item label="所属设备">-->
+<!--      <el-input v-model="props.ItsFatherName" disabled></el-input>-->
+<!--    </el-form-item>-->
     <br>
     <el-button type="primary" @click="emit('submit',formData.data)">确认</el-button>
   </el-form>

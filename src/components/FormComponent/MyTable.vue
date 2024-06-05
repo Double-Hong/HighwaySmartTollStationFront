@@ -22,7 +22,7 @@
       <template #default="{row}">
         <!--        <el-button type="primary" size="small" @click="edit(row)">编辑</el-button>-->
         <el-button type="info" size="default" @click="emit('submit',row)">日志</el-button>
-        <el-button v-if="myStore.getUserType() == 3" type="primary" size="default" @click="emit('fix',row)">维修</el-button>
+<!--        <el-button v-if="myStore.getUserType() == 3" type="primary" size="default" @click="emit('fix',row)">维修</el-button>-->
       </template>
     </el-table-column>
   </el-table>

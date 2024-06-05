@@ -7,13 +7,15 @@
   </div>
   <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%;width: 10%">
     <el-button v-if="!detailVisible" type="success" @click="openAddParentDialog">新增设备</el-button>
-    <el-button v-else type="success" @click="openAddChildDialog" style="position: absolute;left: 20%">新增子设备</el-button>
+    <el-button v-else type="success" @click="openAddChildDialog" style="position: absolute;left: 20%">新增子设备
+    </el-button>
   </div>
   <div v-if="!detailVisible">
     <h1 style="text-align: center">车道基础设备</h1>
     <el-input v-model="searchParent" placeholder="请输入关键字" style="width: 10%;position: absolute;left: 10%;top: 7%"
               clearable/>
-    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%" v-model="stateSelectParent">
+    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%"
+               v-model="stateSelectParent">
       <el-option style="color: #ff5300" label="全部" value=""/>
       <el-option style="color: #ff5300" label="连接" value="连接"/>
       <el-option style="color: #ff5300" label="未连接" value="未连接"/>
@@ -61,7 +63,8 @@
             <p>IP地址:{{ pageInfo.currentAwningLight.equipmentIp }}</p>
             <el-button @click="goToAwningLightDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除
+            </el-button>
           </el-card>
           <br>
         </div>
@@ -76,7 +79,8 @@
             <p>IP地址:{{ pageInfo.currentCarDetector.equipmentIp }}</p>
             <el-button @click="goToCarDetectorDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(2)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(2)">删除
+            </el-button>
           </el-card>
           <br>
         </div>
@@ -91,7 +95,8 @@
             <p>IP地址:{{ pageInfo.currentIntelBoard.equipmentIp }}</p>
             <el-button @click="goToIntelBoardDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(3)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(3)">删除
+            </el-button>
           </el-card>
           <br>
         </div>
@@ -107,7 +112,8 @@
             <p>IP地址:{{ pageInfo.currentLaneWeighingEquipment.equipmentIp }}</p>
             <el-button @click="goToLaneWeighingEquipmentDetail">详情</el-button>
             <el-button type="info">设备日志</el-button>
-            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(4)">删除</el-button>
+            <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(4)">删除
+            </el-button>
           </el-card>
           <br>
         </div>
@@ -140,7 +146,7 @@
                    :ItsFatherName="pageInfo.currentLaneWeighingEquipment.laneWeighingName"/>
     <br>
     <el-button type="primary" @click="editChildVisible = true">修改</el-button>
-    <el-button v-if="myStore.getUserType()!=3" type="info">上报故障</el-button>
+    <el-button v-if="myStore.getUserType()!=3" @click="openReportFaultDialog" type="info">上报故障</el-button>
   </el-dialog>
 
   <el-dialog
@@ -409,10 +415,24 @@
     <h1 v-if="currentType==1" style="color: #d21632">{{ pageInfo.currentAwningLight.awningLightName }}</h1>
     <h1 v-else-if="currentType==2" style="color: #d21632">{{ pageInfo.currentCarDetector.carDetectorName }}</h1>
     <h1 v-else-if="currentType==3" style="color:#d21632;">{{ pageInfo.currentIntelBoard.ledBoardName }}</h1>
-    <h1 v-else-if="currentType==4" style="color: #d21632">{{pageInfo.currentLaneWeighingEquipment.laneWeighingName}}</h1>
+    <h1 v-else-if="currentType==4" style="color: #d21632">
+      {{ pageInfo.currentLaneWeighingEquipment.laneWeighingName }}</h1>
     <br>
     <el-button type="primary" @click="makeSureDeleteChild">确定</el-button>
     <el-button @click="deleteChildVisible=false">取消</el-button>
+  </el-dialog>
+
+  <el-dialog
+      title="上报故障"
+      width="30%"
+      v-model="reportFaultVisible"
+      style="text-align: center"
+      top="10vh"
+  >
+    <MyLogForm v-if="reportFaultVisible" :form-data="nowLogForm"
+               :ItsFatherName="pageInfo.currentLaneInfrastructures.laneInfrastructureName"
+               @submit="makeSureReportFault"
+    />
   </el-dialog>
 
 
@@ -439,6 +459,13 @@ import {
 import MyDescription from "../FormComponent/MyDescription.vue";
 import {ElMessage} from "element-plus";
 import {store} from "../../utils/store.ts";
+import MyLogForm from "../FormComponent/MyLogForm.vue";
+import {
+  awningLogFormData,
+  cameraLogFormData,
+  carDetectorLogFormData,
+  intelLogFormData, laneWeighingLogFormData
+} from "../FormComponent/logType.ts";
 
 const myStore = store()
 
@@ -722,26 +749,23 @@ const openDeleteChildDialog = (type: number) => {
 
 const makeSureDeleteChild = () => {
   deleteChildVisible.value = false
-  if (currentType.value == 1){
-    request.get("/awning-light-entity/deleteAwningLight/"+pageInfo.currentAwningLight.awningLightId).then(res=>{
+  if (currentType.value == 1) {
+    request.get("/awning-light-entity/deleteAwningLight/" + pageInfo.currentAwningLight.awningLightId).then(res => {
       ElMessage.success("删除成功")
       pageInfo.currentAwningLight = {} as AwningLight
     })
-  }
-  else if (currentType.value == 2){
-    request.get("/car-detector-entity/deleteCarDetector/"+pageInfo.currentCarDetector.carDetectorId).then(res=>{
+  } else if (currentType.value == 2) {
+    request.get("/car-detector-entity/deleteCarDetector/" + pageInfo.currentCarDetector.carDetectorId).then(res => {
       ElMessage.success("删除成功")
       pageInfo.currentCarDetector = {} as CarDetector
     })
-  }
-  else if (currentType.value == 3){
-    request.get("/intel-board-entity/deleteIntelBoard/"+pageInfo.currentIntelBoard.ledBoardId).then(res=>{
+  } else if (currentType.value == 3) {
+    request.get("/intel-board-entity/deleteIntelBoard/" + pageInfo.currentIntelBoard.ledBoardId).then(res => {
       ElMessage.success("删除成功")
       pageInfo.currentIntelBoard = {} as IntelBoard
     })
-  }
-  else {
-    request.get("/lane-weighing-equipment-entity/deleteLaneWeighingEquipment/"+pageInfo.currentLaneWeighingEquipment.laneWeighingId).then(res =>{
+  } else {
+    request.get("/lane-weighing-equipment-entity/deleteLaneWeighingEquipment/" + pageInfo.currentLaneWeighingEquipment.laneWeighingId).then(res => {
       ElMessage.success("删除成功")
       pageInfo.currentLaneWeighingEquipment = {} as LaneWeighingEquipment
     })
@@ -759,9 +783,122 @@ const stateSelectParent = ref('')
 const laneInfrastructureFilter = computed(() => {
   return pageInfo.laneInfrastructures.filter((item) => {
     return (item.laneInfrastructureName.includes(searchParent.value) || item.equipmentIp.includes(searchParent.value))
-        && (item.state==stateSelectParent.value || stateSelectParent.value=='')
+        && (item.state == stateSelectParent.value || stateSelectParent.value == '')
   })
 })
+
+/**
+ * 上报故障
+ */
+
+const reportFaultVisible = ref(false)
+
+let nowLogForm = reactive({})
+
+const openReportFaultDialog = () => {
+  reportFaultVisible.value = false
+  if (currentType.value == 1) {
+    awningLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    awningLogFormData.data.awningLightId = pageInfo.currentAwningLight.awningLightId
+    awningLogFormData.data.equipmentName = pageInfo.currentAwningLight.awningLightName
+    awningLogFormData.data.equipmentIp = pageInfo.currentAwningLight.equipmentIp
+    awningLogFormData.data.logType = "故障日志"
+    awningLogFormData.data.state = "未连接"
+    awningLogFormData.data.description = ""
+    awningLogFormData.data.writerName = myStore.getUserInfo().name
+    awningLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    awningLogFormData.data.fixtureType = pageInfo.currentAwningLight.fixtureType
+    awningLogFormData.data.brightness = pageInfo.currentAwningLight.brightness
+
+    nowLogForm = awningLogFormData
+    reportFaultVisible.value = true
+
+  } else if (currentType.value == 2) {
+    carDetectorLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    carDetectorLogFormData.data.carDetectorId = pageInfo.currentCarDetector.carDetectorId
+    carDetectorLogFormData.data.equipmentName = pageInfo.currentCarDetector.carDetectorName
+    carDetectorLogFormData.data.equipmentIp = pageInfo.currentCarDetector.equipmentIp
+    carDetectorLogFormData.data.logType = "故障日志"
+    carDetectorLogFormData.data.state = "未连接"
+    carDetectorLogFormData.data.description = ""
+    carDetectorLogFormData.data.writerName = myStore.getUserInfo().name
+    carDetectorLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    carDetectorLogFormData.data.detectionMethod = pageInfo.currentCarDetector.detectionMethod
+    carDetectorLogFormData.data.detectionRange = pageInfo.currentCarDetector.detectionRange
+
+    nowLogForm = carDetectorLogFormData
+    reportFaultVisible.value = true
+  } else if (currentType.value == 3) {
+    intelLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    intelLogFormData.data.ledBoardId = pageInfo.currentIntelBoard.ledBoardId
+    intelLogFormData.data.equipmentName = pageInfo.currentIntelBoard.ledBoardName
+    intelLogFormData.data.equipmentIp = pageInfo.currentIntelBoard.equipmentIp
+    intelLogFormData.data.logType = "故障日志"
+    intelLogFormData.data.state = "未连接"
+    intelLogFormData.data.description = ""
+    intelLogFormData.data.writerName = myStore.getUserInfo().name
+    intelLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    intelLogFormData.data.displayRate = pageInfo.currentIntelBoard.displayRate
+    intelLogFormData.data.brightness = pageInfo.currentIntelBoard.brightness
+    intelLogFormData.data.contrastRatio = pageInfo.currentIntelBoard.contrastRatio
+
+    nowLogForm = intelLogFormData
+    reportFaultVisible.value = true
+  } else {
+    laneWeighingLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    laneWeighingLogFormData.data.laneWeighingId = pageInfo.currentLaneWeighingEquipment.laneWeighingId
+    laneWeighingLogFormData.data.equipmentName = pageInfo.currentLaneWeighingEquipment.laneWeighingName
+    laneWeighingLogFormData.data.equipmentIp = pageInfo.currentLaneWeighingEquipment.equipmentIp
+    laneWeighingLogFormData.data.logType = "故障日志"
+    laneWeighingLogFormData.data.state = "未连接"
+    laneWeighingLogFormData.data.description = ""
+    laneWeighingLogFormData.data.writerName = myStore.getUserInfo().name
+    laneWeighingLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    laneWeighingLogFormData.data.weighingMachineState = pageInfo.currentLaneWeighingEquipment.weighingMachineState
+    laneWeighingLogFormData.data.displayState = pageInfo.currentLaneWeighingEquipment.displayState
+
+    nowLogForm = laneWeighingLogFormData
+    reportFaultVisible.value = true
+  }
+}
+
+const makeSureReportFault = () => {
+  // request.post("/fault-log-entity/addFaultLog", nowLogForm).then(res => {
+  //   ElMessage.success("上报成功")
+  //   reportFaultVisible.value = false
+  // })
+  if (currentType.value == 1) {
+    request.post("/awning-light-log-entity/addAwningLog", awningLogFormData.data).then(res => {
+      ElMessage.success("上报成功")
+      pageInfo.currentAwningLight = res.data
+      reportFaultVisible.value = false
+    })
+  } else if (currentType.value == 2) {
+    request.post("/car-detector-log-entity/addCarDetectorLog", carDetectorLogFormData.data).then(res => {
+      ElMessage.success("上报成功")
+      pageInfo.currentCarDetector = res.data
+      reportFaultVisible.value = false
+    })
+  } else if (currentType.value == 3) {
+    request.post("/intel-board-log-entity/addIntelBoardLog", intelLogFormData.data).then(res => {
+      ElMessage.success("上报成功")
+      pageInfo.currentIntelBoard = res.data
+      reportFaultVisible.value = false
+    })
+  } else {
+    request.post("/lane-weighing-equipment-log-entity/addLaneWeighingEquipmentLog", laneWeighingLogFormData.data).then(res => {
+      ElMessage.success("上报成功")
+      pageInfo.currentLaneWeighingEquipment = res.data
+      reportFaultVisible.value = false
+    })
+  }
+  detailVisible.value = false
+  childDialogVisible.value = false
+}
 
 onMounted(() => {
   request.get("/lane-infrastructure-entity/getAllLaneInfrastructure").then(res => {
@@ -773,7 +910,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.el-card{
-  width: 95%;left: 2.5%;position: relative;
+.el-card {
+  width: 95%;
+  left: 2.5%;
+  position: relative;
 }
 </style>

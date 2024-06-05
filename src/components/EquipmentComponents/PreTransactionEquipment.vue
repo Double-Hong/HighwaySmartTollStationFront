@@ -546,7 +546,7 @@ import {
 import {CheckOne, CloseOne, Editor} from "@icon-park/vue-next"
 import {ElMessage} from "element-plus";
 import {store} from "../../utils/store.ts";
-import {cameraLogFormData} from "../FormComponent/logType.ts";
+import {cameraLogFormData, etcLogFormData, inductionLogFormData} from "../FormComponent/logType.ts";
 import MyLogForm from "../FormComponent/MyLogForm.vue";
 
 
@@ -848,10 +848,24 @@ let nowLogForm = reactive({})
 const openReportFaultDialog = () => {
   reportFaultVisible.value = false
   if (currentType.value == 1) {
-    nowLogForm = pageInfo.currentAntenna
+    etcLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    etcLogFormData.data.antennaId = pageInfo.currentAntenna.antennaId
+    etcLogFormData.data.equipmentName = pageInfo.currentAntenna.antennaName
+    etcLogFormData.data.equipmentIp = pageInfo.currentAntenna.equipmentIp
+    etcLogFormData.data.logType = "故障日志"
+    etcLogFormData.data.state = "未连接"
+    etcLogFormData.data.description = ""
+    etcLogFormData.data.writerName = myStore.getUserInfo().name
+    etcLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    etcLogFormData.data.beamWidth = pageInfo.currentAntenna.beamWidth
+    etcLogFormData.data.frequency = pageInfo.currentAntenna.frequency
+    etcLogFormData.data.readRange = pageInfo.currentAntenna.readRange
+
+    nowLogForm = etcLogFormData
     reportFaultVisible.value = true
   } else if (currentType.value == 2) {
-    cameraLogFormData.data.logTime = new Date().toLocaleDateString()+" "+new Date().toLocaleTimeString()
+    cameraLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
     cameraLogFormData.data.cameraId = pageInfo.currentCamera.cameraId
     cameraLogFormData.data.equipmentName = pageInfo.currentCamera.cameraName
     cameraLogFormData.data.equipmentIp = pageInfo.currentCamera.equipmentIp
@@ -867,7 +881,21 @@ const openReportFaultDialog = () => {
     nowLogForm = cameraLogFormData
     reportFaultVisible.value = true
   } else {
-    nowLogForm = pageInfo.currentInductionScreen
+    inductionLogFormData.data.logTime = new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString()
+    inductionLogFormData.data.inductionScreenId = pageInfo.currentInductionScreen.inductionScreenId
+    inductionLogFormData.data.equipmentName = pageInfo.currentInductionScreen.inductionScreenName
+    inductionLogFormData.data.equipmentIp = pageInfo.currentInductionScreen.equipmentIp
+    inductionLogFormData.data.logType = "故障日志"
+    inductionLogFormData.data.state = "未连接"
+    inductionLogFormData.data.description = ""
+    inductionLogFormData.data.writerName = myStore.getUserInfo().name
+    inductionLogFormData.data.writerId = myStore.getCurrentUserId()
+
+    inductionLogFormData.data.brightness = pageInfo.currentInductionScreen.brightness
+    inductionLogFormData.data.contrastRatio = pageInfo.currentInductionScreen.contrastRatio
+    inductionLogFormData.data.displayRate = pageInfo.currentInductionScreen.displayRate
+
+    nowLogForm = inductionLogFormData
     reportFaultVisible.value = true
   }
 }
@@ -877,16 +905,24 @@ const makeSureReportFault = () => {
   //   ElMessage.success("上报成功")
   //   reportFaultVisible.value = false
   // })
-  if (currentType.value == 1){
-
-  }else if (currentType.value == 2){
-    request.post("/camera-log-entity/addCameraLog",cameraLogFormData.data).then(res =>{
+  if (currentType.value == 1) {
+    request.post("/etc-antenna-log-entity/addEtcAntennaLog", etcLogFormData.data).then(res => {
+      ElMessage.success("上报成功")
+      pageInfo.currentAntenna = res.data
+      reportFaultVisible.value = false
+    })
+  } else if (currentType.value == 2) {
+    request.post("/camera-log-entity/addCameraLog", cameraLogFormData.data).then(res => {
       ElMessage.success("上报成功")
       pageInfo.currentCamera = res.data
       reportFaultVisible.value = false
     })
-  }else if (currentType.value == 3){
-
+  } else if (currentType.value == 3) {
+    request.post("/induction-screen-log-entity/addInductionScreenLog", inductionLogFormData.data).then(res => {
+      ElMessage.success("上报成功")
+      pageInfo.currentInductionScreen = res.data
+      reportFaultVisible.value = false
+    })
   }
   childDetailVisible.value = false
 }
