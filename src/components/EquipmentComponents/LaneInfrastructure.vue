@@ -62,7 +62,7 @@
             <p>安装日期:{{ pageInfo.currentAwningLight.installationDate }}</p>
             <p>IP地址:{{ pageInfo.currentAwningLight.equipmentIp }}</p>
             <el-button @click="goToAwningLightDetail">详情</el-button>
-            <el-button type="info">设备日志</el-button>
+            <el-button type="info" @click="openLogDialog(6,pageInfo.currentAwningLight)">设备日志</el-button>
             <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除
             </el-button>
           </el-card>
@@ -78,7 +78,7 @@
             <p>安装日期:{{ pageInfo.currentCarDetector.installationDate }}</p>
             <p>IP地址:{{ pageInfo.currentCarDetector.equipmentIp }}</p>
             <el-button @click="goToCarDetectorDetail">详情</el-button>
-            <el-button type="info">设备日志</el-button>
+            <el-button type="info" @click="openLogDialog(7,pageInfo.currentCarDetector)">设备日志</el-button>
             <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(2)">删除
             </el-button>
           </el-card>
@@ -94,7 +94,7 @@
             <p>安装日期:{{ pageInfo.currentIntelBoard.installationDate }}</p>
             <p>IP地址:{{ pageInfo.currentIntelBoard.equipmentIp }}</p>
             <el-button @click="goToIntelBoardDetail">详情</el-button>
-            <el-button type="info">设备日志</el-button>
+            <el-button type="info" @click="openLogDialog(8,pageInfo.currentIntelBoard)">设备日志</el-button>
             <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(3)">删除
             </el-button>
           </el-card>
@@ -111,7 +111,7 @@
             <p>安装日期:{{ pageInfo.currentLaneWeighingEquipment.installationDate }}</p>
             <p>IP地址:{{ pageInfo.currentLaneWeighingEquipment.equipmentIp }}</p>
             <el-button @click="goToLaneWeighingEquipmentDetail">详情</el-button>
-            <el-button type="info">设备日志</el-button>
+            <el-button type="info" @click="openLogDialog(9,pageInfo.currentLaneWeighingEquipment)">设备日志</el-button>
             <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(4)">删除
             </el-button>
           </el-card>
@@ -435,6 +435,14 @@
     />
   </el-dialog>
 
+  <el-dialog
+      title="设备日志"
+      width="90%"
+      v-model="logDialogVisible"
+      style="text-align: center"
+  >
+    <MyLogTable v-if="logDialogVisible" :form-data="nowLogData" :button-click="false"/>
+  </el-dialog>
 
 </template>
 
@@ -461,11 +469,12 @@ import {ElMessage} from "element-plus";
 import {store} from "../../utils/store.ts";
 import MyLogForm from "../FormComponent/MyLogForm.vue";
 import {
-  awningLogFormData,
+  awningLogFormData, awningLogTableData,
   cameraLogFormData,
-  carDetectorLogFormData,
-  intelLogFormData, laneWeighingLogFormData
+  carDetectorLogFormData, carDetectorLogTableData,
+  intelLogFormData, intelLogTableData, laneWeighingLogFormData, laneWeighingLogTableData
 } from "../FormComponent/logType.ts";
+import MyLogTable from "../FormComponent/MyLogTable.vue";
 
 const myStore = store()
 
@@ -898,6 +907,43 @@ const makeSureReportFault = () => {
   }
   detailVisible.value = false
   childDialogVisible.value = false
+}
+
+/**
+ * 查看设备日志
+ */
+const logDialogVisible = ref(false)
+
+let nowLogData = reactive({})
+
+//通过currentSelect的值，请求对应的设备日志数据
+const openLogDialog = (currentType: number, equipment: any) => {
+  logDialogVisible.value = false
+  if (currentType == 6) {
+    request.get("/awning-light-log-entity/getAwningLogById/" + equipment["awningLightId"]).then(res => {
+      awningLogTableData.data = res.data
+      nowLogData = awningLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentType == 7) {
+    request.get("/car-detector-log-entity/getCarDetectorLogById/" + equipment["carDetectorId"]).then(res => {
+      carDetectorLogTableData.data = res.data
+      nowLogData = carDetectorLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentType == 8) {
+    request.get("/intel-board-log-entity/getIntelBoardLogById/" + equipment["ledBoardId"]).then(res => {
+      intelLogTableData.data = res.data
+      nowLogData = intelLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentType == 9) {
+    request.get("/lane-weighing-equipment-log-entity/getLaneWeighingEquipmentLogById/" + equipment["laneWeighingId"]).then(res => {
+      laneWeighingLogTableData.data = res.data
+      nowLogData = laneWeighingLogTableData
+      logDialogVisible.value = true
+    })
+  }
 }
 
 onMounted(() => {

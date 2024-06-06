@@ -66,7 +66,7 @@
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToAntennaDetail(item)">详情</el-button>
-          <el-button type="info">设备日志</el-button>
+          <el-button type="info" @click="openLogDialog(1,item)">设备日志</el-button>
           <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除
           </el-button>
         </el-card>
@@ -82,7 +82,7 @@
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToCameraDetail(item)">详情</el-button>
-          <el-button @click="deviceLogVisible=true" type="info">设备日志</el-button>
+          <el-button @click="openLogDialog(2,item)" type="info">设备日志</el-button>
           <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteCameraDialog(item)">删除
           </el-button>
         </el-card>
@@ -99,7 +99,7 @@
           <p>安装日期:{{ item.installationDate }}</p>
           <p>IP地址:{{ item.equipmentIp }}</p>
           <el-button @click="goToInductionScreenDetail(item)">详情</el-button>
-          <el-button type="info">设备日志</el-button>
+          <el-button type="info" @click="openLogDialog(3,item)">设备日志</el-button>
           <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(3)">删除
           </el-button>
         </el-card>
@@ -532,6 +532,15 @@
     />
   </el-dialog>
 
+  <el-dialog
+      title="设备日志"
+      width="90%"
+      v-model="logDialogVisible"
+      style="text-align: center"
+  >
+    <MyLogTable v-if="logDialogVisible" :form-data="nowLogData" :button-click="false" />
+  </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -546,8 +555,15 @@ import {
 import {CheckOne, CloseOne, Editor} from "@icon-park/vue-next"
 import {ElMessage} from "element-plus";
 import {store} from "../../utils/store.ts";
-import {cameraLogFormData, etcLogFormData, inductionLogFormData} from "../FormComponent/logType.ts";
+import {
+  cameraLogFormData,
+  cameraLogTableData,
+  etcLogFormData,
+  etcLogTableData,
+  inductionLogFormData, inductionLogTableData
+} from "../FormComponent/logType.ts";
 import MyLogForm from "../FormComponent/MyLogForm.vue";
+import MyLogTable from "../FormComponent/MyLogTable.vue";
 
 
 const myStore = store()
@@ -926,6 +942,38 @@ const makeSureReportFault = () => {
   }
   childDetailVisible.value = false
 }
+
+/**
+ * 查看设备日志
+ */
+const logDialogVisible = ref(false)
+
+let nowLogData = reactive({})
+
+//通过currentSelect的值，请求对应的设备日志数据
+const openLogDialog = (currentType:number,equipment:any) => {
+  logDialogVisible.value = false
+  if (currentType == 1) {
+    request.get("/etc-antenna-log-entity/getEtcAntennaLogById/" + equipment["antennaId"]).then(res => {
+      etcLogTableData.data = res.data
+      nowLogData = etcLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentType == 2) {
+    request.get("/camera-log-entity/getCameraLogById/" + equipment["cameraId"]).then(res => {
+      cameraLogTableData.data = res.data
+      nowLogData = cameraLogTableData
+      logDialogVisible.value = true
+    })
+  } else {
+    request.get("/induction-screen-log-entity/getInductionScreenLogById/" + equipment["inductionScreenId"]).then(res => {
+      inductionLogTableData.data = res.data
+      nowLogData = inductionLogTableData
+      logDialogVisible.value = true
+    })
+  }
+}
+
 
 //查看设备日志
 const deviceLogVisible = ref(false)

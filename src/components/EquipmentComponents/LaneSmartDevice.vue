@@ -7,13 +7,15 @@
   </div>
   <div v-if="myStore.getUserInfo().type==1" style="position: absolute;top:7%;left: 1%;width: 10%">
     <el-button v-if="!detailVisible" type="success" @click="openAddParentDialog">新增设备</el-button>
-    <el-button v-else type="success" @click="openAddChildDialog" style="position: absolute;left: 20%">新增子设备</el-button>
+    <el-button v-else type="success" @click="openAddChildDialog" style="position: absolute;left: 20%">新增子设备
+    </el-button>
   </div>
   <div v-if="!detailVisible">
     <h1 style="text-align: center">车道智能自助设备</h1>
     <el-input v-model="searchParent" placeholder="请输入关键字" style="width: 10%;position: absolute;left: 10%;top: 7%"
               clearable/>
-    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%" v-model="stateSelectParent">
+    <el-select placeholder="筛选设备状态" style="position: absolute;width: 10%;left: 21%;top: 7%"
+               v-model="stateSelectParent">
       <el-option style="color: #ff5300" label="全部" value=""/>
       <el-option style="color: #ff5300" label="连接" value="连接"/>
       <el-option style="color: #ff5300" label="未连接" value="未连接"/>
@@ -58,8 +60,9 @@
           <p>安装日期:{{ pageInfo.entranceEquipment.installationDate }}</p>
           <p>IP地址:{{ pageInfo.entranceEquipment.equipmentIp }}</p>
           <el-button @click="goToEntranceDetail">详情</el-button>
-          <el-button type="info">设备日志</el-button>
-          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除</el-button>
+          <el-button type="info" @click="openLogDialog(1,pageInfo.entranceEquipment)">设备日志</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(1)">删除
+          </el-button>
         </el-card>
       </div>
       <div v-if="flag2" style="width: 33%;height: 100%;position: relative;text-align: center">
@@ -72,8 +75,9 @@
           <p>安装日期:{{ pageInfo.exportPaymentEquipment.installationDate }}</p>
           <p>IP地址:{{ pageInfo.exportPaymentEquipment.equipmentIp }}</p>
           <el-button @click="goToExportDetail">详情</el-button>
-          <el-button type="info">设备日志</el-button>
-          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(2)">删除</el-button>
+          <el-button type="info" @click="openLogDialog(2,pageInfo.exportPaymentEquipment)">设备日志</el-button>
+          <el-button v-if="myStore.getUserInfo().type==1" type="danger" @click="openDeleteChildDialog(2)">删除
+          </el-button>
         </el-card>
       </div>
     </div>
@@ -370,6 +374,15 @@
     />
   </el-dialog>
 
+  <el-dialog
+      title="设备日志"
+      width="90%"
+      v-model="logDialogVisible"
+      style="text-align: center"
+  >
+    <MyLogTable v-if="logDialogVisible" :form-data="nowLogData" :button-click="false"/>
+  </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -387,7 +400,13 @@ import {store} from "../../utils/store.ts";
 import MyForm from "../FormComponent/MyForm.vue";
 import {addEntranceEquipmentData} from "../FormComponent/type.ts";
 import MyLogForm from "../FormComponent/MyLogForm.vue";
-import {entranceLogFormData, exportLogFormData, inductionLogFormData} from "../FormComponent/logType.ts";
+import {
+  entranceLogFormData,
+  entranceLogTableData,
+  exportLogFormData, exportLogTableData,
+  inductionLogFormData
+} from "../FormComponent/logType.ts";
+import MyLogTable from "../FormComponent/MyLogTable.vue";
 
 const detailVisible = ref(false)
 const pageInfo = reactive({
@@ -614,7 +633,7 @@ const stateSelectParent = ref('')
 const laneSmartFilter = computed(() => {
   return pageInfo.laneSmartDevices.filter((item) => {
     return (item.laneSmartDeviceName.includes(searchParent.value) || item.equipmentIp.includes(searchParent.value))
-        && (item.state==stateSelectParent.value || stateSelectParent.value=='')
+        && (item.state == stateSelectParent.value || stateSelectParent.value == '')
   })
 })
 
@@ -667,14 +686,14 @@ const makeSureReportFault = () => {
   //   ElMessage.success("上报成功")
   //   reportFaultVisible.value = false
   // })
-  if (currentType.value == 1){
-    request.post("/entrance-equipment-log-entity/addEntranceEquipmentLog",entranceLogFormData.data).then(res=>{
+  if (currentType.value == 1) {
+    request.post("/entrance-equipment-log-entity/addEntranceEquipmentLog", entranceLogFormData.data).then(res => {
       ElMessage.success("上报成功")
       pageInfo.entranceEquipment = res.data
       reportFaultVisible.value = false
     })
-  }else if (currentType.value == 2) {
-    request.post("/export-payment-equipment-log-entity/addExportPaymentEquipmentLog",exportLogFormData.data).then(res=>{
+  } else if (currentType.value == 2) {
+    request.post("/export-payment-equipment-log-entity/addExportPaymentEquipmentLog", exportLogFormData.data).then(res => {
       ElMessage.success("上报成功")
       pageInfo.exportPaymentEquipment = res.data
       reportFaultVisible.value = false
@@ -682,6 +701,31 @@ const makeSureReportFault = () => {
   }
   childDialogVisible.value = false
   detailVisible.value = false
+}
+
+/**
+ * 查看设备日志
+ */
+const logDialogVisible = ref(false)
+
+let nowLogData = reactive({})
+
+//通过currentSelect的值，请求对应的设备日志数据
+const openLogDialog = (currentType: number, equipment: any) => {
+  logDialogVisible.value = false
+  if (currentType == 1) {
+    request.get("/entrance-equipment-log-entity/getEntranceEquipmentLogById/" + equipment["entranceEquipmentId"]).then(res =>{
+      entranceLogTableData.data = res.data
+      nowLogData = entranceLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentType == 2) {
+    request.get("/export-payment-equipment-log-entity/getExportPaymentEquipmentLogById/" + equipment["exportEquipmentId"]).then(res =>{
+      exportLogTableData.data = res.data
+      nowLogData = exportLogTableData
+      logDialogVisible.value = true
+    })
+  }
 }
 
 onMounted(() => {
@@ -693,7 +737,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.el-card{
-  width: 95%;left: 2.5%;position: relative;
+.el-card {
+  width: 95%;
+  left: 2.5%;
+  position: relative;
 }
 </style>

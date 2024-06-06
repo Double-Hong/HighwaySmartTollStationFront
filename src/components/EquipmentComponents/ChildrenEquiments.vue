@@ -20,7 +20,6 @@
       v-model="logDialogVisible"
       style="text-align: center"
   >
-
     <MyLogTable v-if="logDialogVisible" :form-data="nowLogData" @fix="openFixDialog"/>
   </el-dialog>
 
@@ -202,31 +201,31 @@ const openLogDialog = (equipment: any) => {
       nowLogData = exportLogTableData
       logDialogVisible.value = true
     })
-  } else if (currentSelect.value == 6) {
-    request.get("/awning-light-log-entity/getAwningLogById/" + equipment["awningLightId"]).then(res =>{
-      awningLogTableData.data = res.data
-      nowLogData = awningLogTableData
-      logDialogVisible.value = true
-    })
-  } else if (currentSelect.value == 7) {
-    request.get("/car-detector-log-entity/getCarDetectorLogById/" + equipment["carDetectorId"]).then(res =>{
-      carDetectorLogTableData.data = res.data
-      nowLogData = carDetectorLogTableData
-      logDialogVisible.value = true
-    })
-  } else if (currentSelect.value == 8) {
-    request.get("/intel-board-log-entity/getIntelBoardLogById/"+equipment["ledBoardId"]).then(res =>{
-      intelLogTableData.data = res.data
-      nowLogData = intelLogTableData
-      logDialogVisible.value = true
-    })
-  } else if (currentSelect.value == 9) {
-    request.get("/lane-weighing-equipment-log-entity/getLaneWeighingEquipmentLogById/" + equipment["laneWeighingId"]).then(res =>{
-      laneWeighingLogTableData.data = res.data
-      nowLogData = laneWeighingLogTableData
-      logDialogVisible.value = true
-    })
-  }
+    } else if (currentSelect.value == 6) {
+      request.get("/awning-light-log-entity/getAwningLogById/" + equipment["awningLightId"]).then(res =>{
+        awningLogTableData.data = res.data
+        nowLogData = awningLogTableData
+        logDialogVisible.value = true
+      })
+    } else if (currentSelect.value == 7) {
+      request.get("/car-detector-log-entity/getCarDetectorLogById/" + equipment["carDetectorId"]).then(res =>{
+        carDetectorLogTableData.data = res.data
+        nowLogData = carDetectorLogTableData
+        logDialogVisible.value = true
+      })
+    } else if (currentSelect.value == 8) {
+      request.get("/intel-board-log-entity/getIntelBoardLogById/"+equipment["ledBoardId"]).then(res =>{
+        intelLogTableData.data = res.data
+        nowLogData = intelLogTableData
+        logDialogVisible.value = true
+      })
+    } else if (currentSelect.value == 9) {
+      request.get("/lane-weighing-equipment-log-entity/getLaneWeighingEquipmentLogById/" + equipment["laneWeighingId"]).then(res =>{
+        laneWeighingLogTableData.data = res.data
+        nowLogData = laneWeighingLogTableData
+        logDialogVisible.value = true
+      })
+    }
 }
 
 const myStore = store()
