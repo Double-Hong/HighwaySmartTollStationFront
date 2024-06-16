@@ -12,7 +12,7 @@
     <el-option label="情报板" value="8"/>
     <el-option label="车道称重设备" value="9"/>
   </el-select>
-  <MyTable v-if="tableVisible" :form-data="nowData" @submit="openLogDialog" @fix="openFixDialog"/>
+  <MyTable v-if="tableVisible" :form-data="nowData" @submit="openLogDialog" @fix="openFixDialog" @myChart="goToChart"/>
 
   <el-dialog
       title="设备日志"
@@ -171,7 +171,7 @@ const openLogDialog = (equipment: any) => {
   logDialogVisible.value = false
   console.log(equipment)
   if (currentSelect.value == 1) {
-    request.get("/etc-antenna-log-entity/getEtcAntennaLogById/"+equipment["antennaId"]).then(res =>{
+    request.get("/etc-antenna-log-entity/getEtcAntennaLogById/" + equipment["antennaId"]).then(res => {
       etcLogTableData.data = res.data
       nowLogData = etcLogTableData
       logDialogVisible.value = true
@@ -183,49 +183,73 @@ const openLogDialog = (equipment: any) => {
       logDialogVisible.value = true
     })
   } else if (currentSelect.value == 3) {
-    request.get("/induction-screen-log-entity/getInductionScreenLogById/" + equipment["inductionScreenId"]).then(res =>{
+    request.get("/induction-screen-log-entity/getInductionScreenLogById/" + equipment["inductionScreenId"]).then(res => {
       inductionLogTableData.data = res.data
       nowLogData = inductionLogTableData
       logDialogVisible.value = true
     })
   } else if (currentSelect.value == 4) {
-    request.get("/entrance-equipment-log-entity/getEntranceEquipmentLogById/" + equipment["entranceEquipmentId"]).then(res =>{
+    request.get("/entrance-equipment-log-entity/getEntranceEquipmentLogById/" + equipment["entranceEquipmentId"]).then(res => {
       entranceLogTableData.data = res.data
       nowLogData = entranceLogTableData
       logDialogVisible.value = true
     })
   } else if (currentSelect.value == 5) {
     console.log(equipment)
-    request.get("/export-payment-equipment-log-entity/getExportPaymentEquipmentLogById/" + equipment["exportEquipmentId"]).then(res =>{
+    request.get("/export-payment-equipment-log-entity/getExportPaymentEquipmentLogById/" + equipment["exportEquipmentId"]).then(res => {
       exportLogTableData.data = res.data
       nowLogData = exportLogTableData
       logDialogVisible.value = true
     })
-    } else if (currentSelect.value == 6) {
-      request.get("/awning-light-log-entity/getAwningLogById/" + equipment["awningLightId"]).then(res =>{
-        awningLogTableData.data = res.data
-        nowLogData = awningLogTableData
-        logDialogVisible.value = true
-      })
-    } else if (currentSelect.value == 7) {
-      request.get("/car-detector-log-entity/getCarDetectorLogById/" + equipment["carDetectorId"]).then(res =>{
-        carDetectorLogTableData.data = res.data
-        nowLogData = carDetectorLogTableData
-        logDialogVisible.value = true
-      })
-    } else if (currentSelect.value == 8) {
-      request.get("/intel-board-log-entity/getIntelBoardLogById/"+equipment["ledBoardId"]).then(res =>{
-        intelLogTableData.data = res.data
-        nowLogData = intelLogTableData
-        logDialogVisible.value = true
-      })
-    } else if (currentSelect.value == 9) {
-      request.get("/lane-weighing-equipment-log-entity/getLaneWeighingEquipmentLogById/" + equipment["laneWeighingId"]).then(res =>{
-        laneWeighingLogTableData.data = res.data
-        nowLogData = laneWeighingLogTableData
-        logDialogVisible.value = true
-      })
-    }
+  } else if (currentSelect.value == 6) {
+    request.get("/awning-light-log-entity/getAwningLogById/" + equipment["awningLightId"]).then(res => {
+      awningLogTableData.data = res.data
+      nowLogData = awningLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentSelect.value == 7) {
+    request.get("/car-detector-log-entity/getCarDetectorLogById/" + equipment["carDetectorId"]).then(res => {
+      carDetectorLogTableData.data = res.data
+      nowLogData = carDetectorLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentSelect.value == 8) {
+    request.get("/intel-board-log-entity/getIntelBoardLogById/" + equipment["ledBoardId"]).then(res => {
+      intelLogTableData.data = res.data
+      nowLogData = intelLogTableData
+      logDialogVisible.value = true
+    })
+  } else if (currentSelect.value == 9) {
+    request.get("/lane-weighing-equipment-log-entity/getLaneWeighingEquipmentLogById/" + equipment["laneWeighingId"]).then(res => {
+      laneWeighingLogTableData.data = res.data
+      nowLogData = laneWeighingLogTableData
+      logDialogVisible.value = true
+    })
+  }
+}
+
+const goToChart = (equipment: any) => {
+  myStore.chartInfo.currentType = currentSelect.value
+  if (currentSelect.value == 1) {
+    myStore.chartInfo.currentId = equipment["antennaId"]
+  } else if (currentSelect.value == 2) {
+    myStore.chartInfo.currentId = equipment["cameraId"]
+  } else if (currentSelect.value == 3) {
+    myStore.chartInfo.currentId = equipment["inductionScreenId"]
+  } else if (currentSelect.value == 4) {
+    myStore.chartInfo.currentId = equipment["entranceEquipmentId"]
+  } else if (currentSelect.value == 5) {
+    myStore.chartInfo.currentId = equipment["exportEquipmentId"]
+  } else if (currentSelect.value == 6) {
+    myStore.chartInfo.currentId = equipment["awningLightId"]
+  } else if (currentSelect.value == 7) {
+    myStore.chartInfo.currentId = equipment["carDetectorId"]
+  } else if (currentSelect.value == 8) {
+    myStore.chartInfo.currentId = equipment["ledBoardId"]
+  } else if (currentSelect.value == 9) {
+    myStore.chartInfo.currentId = equipment["laneWeighingId"]
+  }
+  myStore.contentDeviceVisible = 4
 }
 
 const myStore = store()
@@ -334,67 +358,67 @@ const openFixDialog = (equipmentLog: any) => {
 
 const makeSureFix = () => {
   if (currentSelect.value == 1) {
-    request.post("/etc-antenna-log-entity/addEtcAntennaLog",etcLogFormData.data).then(res =>{
+    request.post("/etc-antenna-log-entity/addEtcAntennaLog", etcLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 2) {
-    request.post("/camera-log-entity/addCameraLog",cameraLogFormData.data).then(res =>{
+    request.post("/camera-log-entity/addCameraLog", cameraLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 3) {
-    request.post("/induction-screen-log-entity/addInductionScreenLog",inductionLogFormData.data).then(res =>{
+    request.post("/induction-screen-log-entity/addInductionScreenLog", inductionLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 4) {
-    request.post("/entrance-equipment-log-entity/addEntranceEquipmentLog",entranceLogFormData.data).then(res =>{
+    request.post("/entrance-equipment-log-entity/addEntranceEquipmentLog", entranceLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 5) {
-    request.post("/export-payment-equipment-log-entity/addExportPaymentEquipmentLog",exportLogFormData.data).then(res =>{
+    request.post("/export-payment-equipment-log-entity/addExportPaymentEquipmentLog", exportLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 6) {
-    request.post("/awning-light-log-entity/addAwningLog",awningLogFormData.data).then(res =>{
+    request.post("/awning-light-log-entity/addAwningLog", awningLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 7) {
-    request.post("/car-detector-log-entity/addCarDetectorLog",carDetectorLogFormData.data).then(res =>{
+    request.post("/car-detector-log-entity/addCarDetectorLog", carDetectorLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 8) {
-    request.post("/intel-board-log-entity/addIntelBoardLog",intelLogFormData.data).then(res =>{
+    request.post("/intel-board-log-entity/addIntelBoardLog", intelLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 9) {
-    request.post("/lane-weighing-equipment-log-entity/addLaneWeighingEquipmentLog",laneWeighingLogFormData.data).then(res =>{
+    request.post("/lane-weighing-equipment-log-entity/addLaneWeighingEquipmentLog", laneWeighingLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 8) {
-    request.post("/intel-board-log-entity/addIntelBoardLog",intelLogFormData.data).then(res =>{
+    request.post("/intel-board-log-entity/addIntelBoardLog", intelLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false
     })
   } else if (currentSelect.value == 9) {
-    request.post("/lane-weighing-equipment-log-entity/addLaneWeighingEquipmentLog",laneWeighingLogFormData.data).then(res =>{
+    request.post("/lane-weighing-equipment-log-entity/addLaneWeighingEquipmentLog", laneWeighingLogFormData.data).then(res => {
       ElMessage.success("维修上报成功")
       fixDialogVisible.value = false
       logDialogVisible.value = false

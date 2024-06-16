@@ -32,7 +32,7 @@ import LaneSmartDevice from "../components/EquipmentComponents/LaneSmartDevice.v
 import LaneInfrastructure from "../components/EquipmentComponents/LaneInfrastructure.vue";
 import Test from "../components/EquipmentComponents/Test.vue";
 import ChildrenEquiments from "../components/EquipmentComponents/ChildrenEquiments.vue";
-import EquipmentLog from "../components/EquipmentComponents/EquipmentLog.vue";
+import EquipmentLog from "../components/EquipmentComponents/EquipmentThresholds.vue";
 
 const myStore = store()
 

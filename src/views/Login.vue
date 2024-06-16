@@ -3,23 +3,23 @@
       style="background-image: url('https://ts1.cn.mm.bing.net/th/id/R-C.112a7a0f12d0ac5af50eed60ee202665?rik=Ojlnobn%2bjaSAmg&riu=http%3a%2f%2fm.1234wu.com%2fbjtp%2f154.jpg&ehk=Hz1Jm%2ftTY6D3mW057kRpzZAqyBmPZ5QrOz2rusc9ybA%3d&risl=&pid=ImgRaw&r=0') ;
       background-size:100% 100%;position: absolute;width: 100% ;height: 100%;">
     <el-card class="login" id="login">
-      <h1 style="text-align: center">高速公路智慧收费站智慧运维系统</h1>
+      <h1 style="text-align: center; color: #fff; font-family: 'Arial', sans-serif;">高速公路智慧收费站智慧运维系统</h1>
 
       <div id="Input" style="position: absolute;width: 100%;height: 30%;left: 0;bottom: 30%;text-align: center">
         <el-form label-width="200px" la>
           <el-form-item label="用户名">
-            <el-input placeholder="请输入用户名" prefix-icon="el-icon-user" style="width: 50%" v-model="username"
+            <el-input placeholder="请输入用户名" prefix-icon="el-icon-user" style="width: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px;" v-model="username"
                       clearable></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input placeholder="请输入密码" prefix-icon="el-icon-lock" style="width: 50%" v-model="password"
+            <el-input placeholder="请输入密码" prefix-icon="el-icon-lock" style="width: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px;" v-model="password"
                       show-password
                       clearable></el-input>
           </el-form-item>
         </el-form>
       </div>
 
-      <el-button type="primary" style="position: absolute;left: 42%;bottom: 10%" @click="login">登录</el-button>
+      <el-button type="primary" style="position: absolute;left: 42%;bottom: 10%; transition: all 0.3s; border-radius: 5px;" @click="login" @mouseover="hover = true" @mouseleave="hover = false" :style="{ backgroundColor: hover ? '#409EFF' : '#67C23A' }">登录</el-button>
       <div style="position: absolute;width: 20%;height: 30%; right: 5%;top: 46%">
         <el-select v-model="userType">
           <el-option v-for="item in option" :value="item.value" :label="item.label" />
@@ -43,6 +43,7 @@ const myStore = store()
 const username = ref('')
 const password = ref('')
 const userType = ref(1)
+const hover = ref(false)
 
 const option = [
   {
@@ -101,8 +102,10 @@ const login = () => {
   position: absolute;
   width: 40%;
   height: 40%;
-  background-color: #a6a9de;
+  background-color: rgba(176, 178, 220, 0.8);
   left: 30%;
   top: 30%;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 </style>

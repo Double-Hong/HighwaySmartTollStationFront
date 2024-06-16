@@ -18,11 +18,12 @@
         <close-one v-else theme="filled" size="24" fill="#eb0909"/>
       </template>
     </el-table-column>
-    <el-table-column width="180px" label="操作">
+    <el-table-column width="200" label="操作">
       <template #default="{row}">
         <!--        <el-button type="primary" size="small" @click="edit(row)">编辑</el-button>-->
         <el-button type="info" size="default" @click="emit('submit',row)">日志</el-button>
 <!--        <el-button v-if="myStore.getUserType() == 3" type="primary" size="default" @click="emit('fix',row)">维修</el-button>-->
+        <el-button type="primary" @click="emit('myChart',row)" >图表日志</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -41,7 +42,7 @@ const formData = reactive(props.formData)
 const myStore = store()
 
 // 组件接收函数
-const emit = defineEmits(['submit','fix'])
+const emit = defineEmits(['submit','fix','myChart'])
 
 const stateSelect = ref('')
 

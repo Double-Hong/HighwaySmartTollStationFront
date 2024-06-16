@@ -52,44 +52,26 @@ const openFullScreen = () => {
       <micro-slr-camera theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
       <span>&nbsp车道基础设备</span>
     </el-menu-item>
-    <el-menu-item v-if="myStore.getUserType() == 1" index="4" @click="myStore.contentDeviceVisible=4">
+    <el-menu-item v-if="myStore.getUserType() == 1" index="6" @click="myStore.contentDeviceVisible=6">
       <vial theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
-      <span>&nbspTest</span>
+      <span>&nbsp设备阈值</span>
     </el-menu-item>
     <el-menu-item index="5" @click="myStore.contentDeviceVisible=5">
       <waterfalls-h theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
       <span>&nbsp子设备详情</span>
     </el-menu-item>
-    <el-menu-item index="6" @click="myStore.contentDeviceVisible=6">
-      <log theme="multi-color" size="24" :fill="['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']"/>
-      <span>&nbsp设备日志</span>
-    </el-menu-item>
     <el-menu-item index="7" v-if="myStore.getUserType() == 1">
       <el-button
           type="primary"
-          @click="dialogVisible = true"
+          @click="openFullScreen"
+          element-loading-text="系统正在记录设备状态..."
+          v-loading.fullscreen.lock="fullscreenLoading"
       >
         记录设备状态
       </el-button>
     </el-menu-item>
 
   </el-menu>
-  <el-dialog
-      title="设备状态记录"
-      v-model="dialogVisible"
-      width="30%"
-      center
-  >
-
-    <el-button
-        type="primary"
-        @click="openFullScreen"
-        element-loading-text="系统正在记录设备状态..."
-        v-loading.fullscreen.lock="fullscreenLoading"
-    >
-      记录设备状态
-    </el-button>
-  </el-dialog>
 </template>
 
 <style scoped>

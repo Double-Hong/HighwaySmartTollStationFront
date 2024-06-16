@@ -368,6 +368,28 @@ export interface LaneWeighingEquipmentLog {
     writerName?: string;
 }
 
+export interface DeviceThresholds {
+    thresholdsId: string;
+    focalLength: number | null;
+    aperture: number | null;
+    awningBrightness: number | null;
+    carDetectorRange: number | null;
+    cardNumber: number | null;
+    etcFrequency: number | null;
+    etcReadRange: number | null;
+    etcBeamWidth: number | null;
+    receiptNumber: number | null;
+    scannerState: number | null;
+    inductionBrightness: number | null;
+    inductionContrastRatio: number | null;
+    inductionDisplayRate: number | null;
+    intelBoardBrightness: number | null;
+    intelBoardContrastRatio: number | null;
+    intelBoardDisplayRate: number | null;
+    weighingMachineState: number | null;
+    weighingDisplayState: number | null;
+}
+
 
 export enum userType {
     "管理员" = 1,

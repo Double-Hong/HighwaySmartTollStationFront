@@ -1,11 +1,15 @@
 import {defineStore} from "pinia";
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 import {userInfo} from "./interface.ts";
 
 export const store = defineStore("all", () => {
     const currentUserId = ref("")
     const contentDeviceVisible = ref(0)//设备管理界面的可见性
     const contentLogVisible = ref(0)//日志管理界面的可见性
+    const chartInfo = reactive({
+        currentType:"",
+        currentId:"",
+    })
 
     const userInfo = ref<userInfo>(
         {
@@ -40,6 +44,6 @@ export const store = defineStore("all", () => {
     return {
         currentUserId, getCurrentUserId, setCurrentUserId, setUserInfo,
         getUserInfo,setPassword,contentLogVisible,contentDeviceVisible,
-        getUserType
+        getUserType,chartInfo
     }
 })
